@@ -1,11 +1,14 @@
 import { createRouter, createWebHistory } from "vue-router"
 
-import NotFoundView from "@/components/NotFoundView"
+import NotFoundView from "@/components/common/NotFoundView"
 import CategoriesList from "@/components/admin/CategoriesList"
 import UsersList from "@/components/admin/UsersList"
 import SubdivisionsList from "@/components/admin/SubdivisionsList"
 import DocsList from "@/components/admin/DocsList"
 import LoginView from "@/components/auth/LoginView"
+import Main from "@/components/admin/Main"
+import AdminHome from "@/components/admin/AdminHome"
+import ClientMain from "@/components/client/ClientMain"
 
 import store from "@/store"
 
@@ -18,43 +21,43 @@ const routes = [
     meta: { requiresAuth: false },
   },
   {
+    path: "",
+    name: "client-main",
+    component: ClientMain,
+    meta: { requiresAuth: false },
+  },
+  {
     path: "/admin",
     name: "admin",
-    redirect: "/admin/users",
-  },
-  {
-    path: "/admin/categories",
-    name: "categories",
-    component: CategoriesList,
-    // children: [
-    //   {
-    //     path: "",
-    //     name: "queue_appointments_home",
-    //     component: AppointmentListHome,
-    //   },
-    //   {
-    //     path: ":id",
-    //     name: "queue_appointments",
-    //     component: AppointmentsList,
-    //   },
-    // ],
-
+    component: AdminHome,
     meta: { requiresAuth: true },
-  },
-  {
-    path: "/admin/users",
-    name: "users",
-    component: UsersList,
-  },
-  {
-    path: "/admin/docs",
-    name: "docs",
-    component: DocsList,
-  },
-  {
-    path: "/admin/subdivisions",
-    name: "subdivisions",
-    component: SubdivisionsList,
+    children: [
+      {
+        path: "",
+        name: "admin-main",
+        component: Main,
+      },
+      {
+        path: "users",
+        name: "admin-users",
+        component: UsersList,
+      },
+      {
+        path: "docs",
+        name: "admin-docs",
+        component: DocsList,
+      },
+      {
+        path: "subdivisions",
+        name: "admin-subdivisions",
+        component: SubdivisionsList,
+      },
+      {
+        path: "categories",
+        name: "admin-categories",
+        component: CategoriesList,
+      },
+    ],
   },
 ]
 
