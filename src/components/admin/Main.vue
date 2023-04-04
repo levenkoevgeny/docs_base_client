@@ -12,17 +12,19 @@
         <th scope="col"></th>
         <th scope="col">Подразделение</th>
         <th scope="col">Название документа</th>
-        <th scope="col">Дата и время загрузки</th>
+        <th scope="col">Дата документа</th>
         <th scope="col">Описание документа</th>
+        <th scope="col">Категория</th>
+        <th scope="col"></th>
       </tr>
     </thead>
     <tbody class="align-middle">
-      <tr>
-        <th scope="row">
+      <tr v-for="doc in latestDocsList" :key="doc.id">
+        <td>
           <div class="mb-3 form-check">
             <input type="checkbox" class="form-check-input" />
           </div>
-        </th>
+        </td>
         <td><img src="" alt="" /></td>
         <td>
           <div class="d-flex">
@@ -32,104 +34,13 @@
             <div>Подразделение 1</div>
           </div>
         </td>
-        <td><a href="">Документ о ....</a></td>
-        <td>03.04.2023г.</td>
-        <td>Лучший документ ....</td>
-      </tr>
-      <tr>
-        <th scope="row">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </th>
-        <td><img src="" alt="" /></td>
         <td>
-          <div class="d-flex">
-            <div class="text-center">
-              <img src="" class="rounded" alt="..." />
-            </div>
-            <div>Подразделение 1</div>
-          </div>
+          {{ doc.file_name }}
         </td>
-        <td><a href="">Документ о ....</a></td>
-        <td>03.04.2023г.</td>
-        <td>Лучший документ ....</td>
-      </tr>
-      <tr>
-        <th scope="row">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </th>
-        <td><img src="" alt="" /></td>
-        <td>
-          <div class="d-flex">
-            <div class="text-center">
-              <img src="" class="rounded" alt="..." />
-            </div>
-            <div>Подразделение 1</div>
-          </div>
-        </td>
-        <td><a href="">Документ о ....</a></td>
-        <td>03.04.2023г.</td>
-        <td>Лучший документ ....</td>
-      </tr>
-      <tr>
-        <th scope="row">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </th>
-        <td><img src="" alt="" /></td>
-        <td>
-          <div class="d-flex">
-            <div class="text-center">
-              <img src="" class="rounded" alt="..." />
-            </div>
-            <div>Подразделение 1</div>
-          </div>
-        </td>
-        <td><a href="">Документ о ....</a></td>
-        <td>03.04.2023г.</td>
-        <td>Лучший документ ....</td>
-      </tr>
-      <tr>
-        <th scope="row">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </th>
-        <td><img src="" alt="" /></td>
-        <td>
-          <div class="d-flex">
-            <div class="text-center">
-              <img src="" class="rounded" alt="..." />
-            </div>
-            <div>Подразделение 1</div>
-          </div>
-        </td>
-        <td><a href="">Документ о ....</a></td>
-        <td>03.04.2023г.</td>
-        <td>Лучший документ ....</td>
-      </tr>
-      <tr>
-        <th scope="row">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </th>
-        <td><img src="" alt="" /></td>
-        <td>
-          <div class="d-flex">
-            <div class="text-center">
-              <img src="" class="rounded" alt="..." />
-            </div>
-            <div>Подразделение 1</div>
-          </div>
-        </td>
-        <td><a href="">Документ о ....</a></td>
-        <td>03.04.2023г.</td>
-        <td>Лучший документ ....</td>
+        <td>{{ doc.doc_date }}</td>
+        <td>{{ doc.description }}</td>
+        <td>{{ doc.category }}</td>
+        <td><a :href="doc.doc_file">Скачать</a></td>
       </tr>
     </tbody>
   </table>
@@ -140,18 +51,39 @@
 </template>
 
 <script>
+import { docsAPI } from "@/api/docsAPI"
 import AdminNav from "@/components/admin/AdminNav"
 import Spinner from "@/components/common/Spinner"
+import { mapGetters } from "vuex"
 
 export default {
   name: "Main",
   components: { AdminNav, Spinner },
   data() {
     return {
-      lastDocsList: [],
+      latestDocsList: [],
       isLoading: true,
       isError: false,
     }
+  },
+  async created() {
+    try {
+      const response = await docsAPI.getItemsList(this.userToken)
+      this.latestDocsList = await response.data.results
+    } catch (e) {
+      this.isError = true
+    } finally {
+      this.isLoading = false
+    }
+  },
+  computed: {
+    ...mapGetters({
+      userData: "auth/getUser",
+      userToken: "auth/getToken",
+    }),
+    sortedDocsList() {
+      return this.latestDocsList
+    },
   },
 }
 </script>

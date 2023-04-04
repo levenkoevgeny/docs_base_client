@@ -68,8 +68,7 @@ const router = createRouter({
 
 router.beforeEach(async (to, from) => {
   await store.dispatch("auth/actionCheckLoggedIn")
-  const isLoggedIn = true
-  // const isLoggedIn = store.getters["auth/getIsLoggedIn"]
+  const isLoggedIn = store.getters["auth/getIsLoggedIn"]
 
   if (to.meta.requiresAuth && !isLoggedIn) {
     return {
