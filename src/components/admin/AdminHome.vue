@@ -35,20 +35,20 @@
           </li>
           <li class="list-group-item border-0">
             <router-link
-              to="/admin/docs"
-              class="link-secondary"
-              style="text-decoration: none"
-              ><font-awesome-icon icon="fa-solid fa-file" />
-              Документы</router-link
-            >
-          </li>
-          <li class="list-group-item border-0">
-            <router-link
               to="/admin/categories"
               class="link-secondary"
               style="text-decoration: none"
               ><font-awesome-icon icon="fa-solid fa-list" />
               Категории</router-link
+            >
+          </li>
+          <li class="list-group-item border-0">
+            <router-link
+              to="/admin/docs"
+              class="link-secondary"
+              style="text-decoration: none"
+              ><font-awesome-icon icon="fa-solid fa-file" />
+              Документы</router-link
             >
           </li>
         </ul>
