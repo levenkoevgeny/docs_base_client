@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <div>
       <h3>Подразделения</h3>
-      <small>Все (100)</small>
+      <small>Все ({{ subdivisionsList.length }})</small>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <div>
           <input type="text" class="form-control" style="width: 400px" />
@@ -29,12 +29,11 @@
               <th scope="col"></th>
               <th scope="col">Название подразделения</th>
               <th scope="col">Количество пользователей</th>
-              <th scope="col">Количество опубликованных документов</th>
               <th scope="col">Дата добавления</th>
             </tr>
           </thead>
           <tbody class="align-middle">
-            <tr>
+            <tr v-for="subdivision in subdivisionsList" :key="subdivision.id">
               <th scope="row">
                 <div class="mb-3 form-check">
                   <input type="checkbox" class="form-check-input" />
@@ -46,240 +45,11 @@
                   <div class="text-center">
                     <img src="" class="rounded" alt="..." />
                   </div>
-                  <div>Подразделение 1</div>
+                  <div>{{ subdivision.subdivision_name }}</div>
                 </div>
               </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
-            </tr>
-            <tr>
-              <th scope="row">
-                <div class="mb-3 form-check">
-                  <input type="checkbox" class="form-check-input" />
-                </div>
-              </th>
-              <td><img src="" alt="" /></td>
-              <td>
-                <div class="d-flex">
-                  <div class="text-center">
-                    <img src="" class="rounded" alt="..." />
-                  </div>
-                  <div>Подразделение 1</div>
-                </div>
-              </td>
-              <td>20</td>
-              <td>50</td>
-              <td>03.04.2023г.</td>
+              <td>{{ subdivision.get_users_count }}</td>
+              <td>{{ subdivision.date_time_created }}</td>
             </tr>
           </tbody>
         </table>
@@ -289,8 +59,40 @@
 </template>
 
 <script>
+import Spinner from "@/components/common/Spinner"
+import { mapGetters } from "vuex"
+import { subdivisionsAPI } from "@/api/subdivisionsAPI"
 export default {
   name: "SubdivisionsList",
+  components: { Spinner },
+  data() {
+    return {
+      subdivisionsList: [],
+      isLoading: true,
+      isError: false,
+    }
+  },
+  async created() {
+    try {
+      const response = await subdivisionsAPI.getItemsList(this.userToken)
+      this.subdivisionsList = await response.data.results
+    } catch (e) {
+      this.isError = true
+    } finally {
+      this.isLoading = false
+    }
+  },
+  methods: {},
+  computed: {
+    ...mapGetters({
+      userData: "auth/getUser",
+      userToken: "auth/getToken",
+    }),
+    sortedSubdivisionsList() {
+      return this.subdivisionsList
+    },
+  },
+  watch: {},
 }
 </script>
 
