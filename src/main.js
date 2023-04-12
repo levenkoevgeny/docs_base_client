@@ -12,6 +12,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons"
 import { faFileExport } from "@fortawesome/free-solid-svg-icons"
 import { faBook } from "@fortawesome/free-solid-svg-icons"
 import { faList } from "@fortawesome/free-solid-svg-icons"
+import { faArrowRightToBracket } from "@fortawesome/free-solid-svg-icons"
 
 library.add(faUsers)
 library.add(faUser)
@@ -20,6 +21,7 @@ library.add(faPlus)
 library.add(faFileExport)
 library.add(faBook)
 library.add(faList)
+library.add(faArrowRightToBracket)
 
 createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon)

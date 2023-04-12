@@ -44,8 +44,52 @@
     </div>
 
     <div v-else>
-      <div v-if="sortedCategoriesList.length > 0" class="mt-5">
-        <small>Всего записей в базе - ({{ categoriesList.count }})</small>
+      <nav aria-label="breadcrumb" class="mt-5">
+        <ol class="breadcrumb">
+          <li
+            class="breadcrumb-item"
+            :class="{
+              active: isLastArrayElement(categoryBreadCrumbs, breadCrumb),
+            }"
+            v-for="breadCrumb in categoryBreadCrumbs"
+            :key="breadCrumb.category"
+          >
+            <button
+              type="button"
+              class="btn btn-link"
+              disabled
+              style="cursor: help !important; text-decoration: none"
+              @click="
+                clickBreadCrumb(
+                  breadCrumb.parentSearchFormData.parent_category,
+                  breadCrumb.parentSearchFormData.parent_category_isnull,
+                  breadCrumb.category_id
+                )
+              "
+              v-if="isLastArrayElement(categoryBreadCrumbs, breadCrumb)"
+            >
+              {{ breadCrumb.category_item_name }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-link"
+              @click="
+                clickBreadCrumb(
+                  breadCrumb.parentSearchFormData.parent_category,
+                  breadCrumb.parentSearchFormData.parent_category_isnull,
+                  breadCrumb.category_id
+                )
+              "
+              v-else
+            >
+              {{ breadCrumb.category_item_name }}
+            </button>
+          </li>
+        </ol>
+      </nav>
+
+      <div v-if="sortedCategoriesList.length > 0" class="mt-3">
+        <small>Всего записей - ({{ categoriesList.count }})</small>
         <table class="table table-borderless table-hover">
           <thead class="table-head">
             <tr>
@@ -60,8 +104,8 @@
                 />
               </th>
               <th scope="col">Категория</th>
-              <th scope="col">Родительская категория</th>
               <th scope="col">Дата и время создания</th>
+              <th scope="col"></th>
             </tr>
           </thead>
           <tbody>
@@ -82,10 +126,22 @@
               <td>
                 {{ category.category_item_name }}
               </td>
-              <td>{{ category.get_parent }}</td>
               <td>
                 {{ getFormattedDateComponent(category.date_time_created) }}
                 {{ getFormattedTimeComponent(category.date_time_created) }}
+              </td>
+              <td>
+                <button
+                  class="btn btn-link"
+                  @click.stop="
+                    clickGetIntoCategory({
+                      ...category,
+                      parent_category_isnull: false,
+                    })
+                  "
+                >
+                  Переход
+                </button>
               </td>
             </tr>
           </tbody>
@@ -137,16 +193,32 @@ export default {
   data() {
     return {
       categoriesList: { results: [] },
+      categoryBreadCrumbs: [
+        {
+          category_id: null,
+          category_item_name: "Главная",
+          parentSearchFormData: {
+            parent_category: "",
+            parent_category_isnull: true,
+          },
+        },
+      ],
       searchForm: {
         category_item_name: "",
+        parent_category: "",
+        parent_category_isnull: true,
       },
+      currentCategory: null,
       isLoading: true,
       isError: false,
     }
   },
   async created() {
     try {
-      const response = await categoriesAPI.getItemsList(this.userToken)
+      const response = await categoriesAPI.getItemsList(
+        this.userToken,
+        this.searchForm
+      )
       this.categoriesList = await response.data
     } catch (e) {
       this.isError = true
@@ -164,9 +236,9 @@ export default {
       try {
         const response = await categoriesAPI.getItemsList(
           this.userToken,
-          this.searchForm.category_item_name
+          this.searchForm
         )
-        this.subdivisionsList = await response.data
+        this.categoriesList = await response.data
       } catch (error) {
         this.isError = true
       } finally {
@@ -196,6 +268,70 @@ export default {
     getFormattedTimeComponent(dateTime) {
       return getFormattedTime(dateTime)
     },
+    addToBreadCrumbs(
+      category_id,
+      category_item_name,
+      parent_category,
+      parent_category_isnull
+    ) {
+      this.categoryBreadCrumbs.push({
+        category_id,
+        category_item_name,
+        parentSearchFormData: { parent_category, parent_category_isnull },
+      })
+    },
+
+    getIntoCategory(parent_category, parent_category_isnull, currentCategory) {
+      this.searchForm.parent_category = parent_category
+      this.searchForm.parent_category_isnull = parent_category_isnull
+      this.currentCategory = currentCategory
+    },
+    clickGetIntoCategory(data) {
+      let {
+        id: parentCategory,
+        category_item_name,
+        parent_category_isnull,
+      } = data
+      this.getIntoCategory(
+        parentCategory,
+        parent_category_isnull,
+        parentCategory
+      )
+      this.addToBreadCrumbs(
+        parentCategory,
+        category_item_name,
+        parentCategory,
+        parent_category_isnull
+      )
+      this.currentCategory = parentCategory
+    },
+
+    clickBreadCrumb(parentCategory, parent_category_isnull, currentCategory) {
+      this.getIntoCategory(
+        parentCategory,
+        parent_category_isnull,
+        currentCategory
+      )
+      let lastIndex
+      this.categoryBreadCrumbs.map((breadCrumb, index) => {
+        if (breadCrumb.category_id === currentCategory) {
+          lastIndex = index
+        }
+      })
+      this.categoryBreadCrumbs = this.categoryBreadCrumbs.filter(
+        (breadCrumb, index) => index < lastIndex + 1
+      )
+    },
+    isLastArrayElement(array, el) {
+      let lastIndex = array.length - 1
+      let elIndex
+      array.map((element, index) => {
+        if (element.category_id === el.category_id) {
+          elIndex = index
+        }
+      })
+      return elIndex === lastIndex
+    },
   },
   computed: {
     ...mapGetters({
@@ -215,7 +351,14 @@ export default {
       return counter
     },
   },
-  watch: {},
+  watch: {
+    searchForm: {
+      handler(newValue, oldValue) {
+        this.makeFilter()
+      },
+      deep: true,
+    },
+  },
 }
 </script>
 

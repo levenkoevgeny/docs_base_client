@@ -4,9 +4,11 @@ import { authHeaders } from "@/api/authAPI"
 let base_url = "categories"
 
 export const categoriesAPI = {
-  async getItemsList(token, category_item_name = "") {
+  async getItemsList(token, searchForm) {
+    let { category_item_name, parent_category, parent_category_isnull } =
+      searchForm
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?category_item_name__icontains=${category_item_name}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?category_item_name__icontains=${category_item_name}&parent_category=${parent_category}&parent_category__isnull=${parent_category_isnull}`,
       authHeaders(token)
     )
   },

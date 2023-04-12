@@ -11,9 +11,7 @@
       <div class="modal-content">
         <form @submit.prevent="addNewSubdivision">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">
-              Новое подразделение
-            </h5>
+            <h5 class="modal-title">Новое подразделение</h5>
             <button
               type="button"
               class="btn-close"
