@@ -215,7 +215,7 @@
               <th scope="col">Название подразделения</th>
               <th scope="col">Область</th>
               <th scope="col">Количество пользователей</th>
-              <th scope="col">Дата и время добавления</th>
+              <th scope="col">Дата и время создания</th>
             </tr>
           </thead>
           <tbody>
