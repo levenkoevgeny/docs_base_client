@@ -19,9 +19,6 @@ axios.interceptors.response.use(
       store.dispatch("auth/actionRemoveLogIn")
       await router.replace({ name: "login" })
     }
-    if (error.response.status === 404) {
-      await router.replace({ name: "NotFound" })
-    }
     return Promise.reject(error)
   }
 )

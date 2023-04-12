@@ -1,17 +1,14 @@
 import axios from "axios"
 import { authHeaders } from "@/api/authAPI"
 
-let base_url = "subdivisions"
+let base_url = "regions"
 
-export const subdivisionsAPI = {
-  async getItemsList(token, subdivision_name = "") {
+export const regionsAPI = {
+  async getItemsList(token) {
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?subdivision_name__icontains=${subdivision_name}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/`,
       authHeaders(token)
     )
-  },
-  async updateList(url, token) {
-    return axios.get(url, authHeaders(token))
   },
   async getItemData(token, itemId) {
     return axios.get(
