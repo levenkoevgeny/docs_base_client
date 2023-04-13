@@ -1,4 +1,117 @@
 <template>
+  <!--Add new category modal-->
+  <div
+    class="modal fade"
+    id="addCategoryModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form @submit.prevent="addNewCategory">
+          <div class="modal-header">
+            <h5 class="modal-title">Новая категория</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label class="form-label">Название категории</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      v-model="newCategoryForm.category_item_name"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              ref="addNewCategoryModalCloseButton"
+            >
+              Закрыть
+            </button>
+            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+              Добавить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--Add new category modal-->
+
+  <!--Update category modal-->
+  <div
+    class="modal fade"
+    id="updateCategoryModal"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+    ref="categoryUpdate"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <form @submit.prevent="updateCategory">
+          <div class="modal-header">
+            <h5 class="modal-title">Редактирование категории</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid">
+              <div class="row">
+                <div class="col-12">
+                  <div class="mb-3">
+                    <label class="form-label">Название категории</label>
+                    <input
+                      type="text"
+                      class="form-control"
+                      v-model="currentCategoryForUpdate.category_item_name"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              ref="updateCategoryModalCloseButton"
+            >
+              Закрыть
+            </button>
+            <button type="submit" class="btn btn-primary" :disabled="isLoading">
+              Сохранить
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  <!--Update category modal-->
+
   <div class="container-fluid">
     <div class="alert alert-danger" role="alert" v-if="isError">
       Ошибка приложения
@@ -44,7 +157,7 @@
     </div>
 
     <div v-else>
-      <nav aria-label="breadcrumb" class="mt-5">
+      <nav aria-label="breadcrumb" class="mt-3">
         <ol class="breadcrumb">
           <li
             class="breadcrumb-item"
@@ -185,7 +298,6 @@ import Spinner from "@/components/common/Spinner"
 import { mapGetters } from "vuex"
 import { getFormattedDate, getFormattedTime } from "@/utils"
 import debounce from "lodash.debounce"
-import { subdivisionsAPI } from "@/api/subdivisionsAPI"
 
 export default {
   name: "CategoriesList",
@@ -193,6 +305,9 @@ export default {
   data() {
     return {
       categoriesList: { results: [] },
+      newCategoryForm: {
+        category_item_name: "",
+      },
       categoryBreadCrumbs: [
         {
           category_id: null,
@@ -209,6 +324,7 @@ export default {
         parent_category_isnull: true,
       },
       currentCategory: null,
+      currentCategoryForUpdate: { category_item_name: "" },
       isLoading: true,
       isError: false,
     }
@@ -227,9 +343,64 @@ export default {
     }
   },
   methods: {
-    async addNewCategory(event) {},
-    async updateCategory(event) {},
-    async showModalForUpdate(event) {},
+    async addNewCategory() {
+      this.isLoading = true
+      try {
+        await categoriesAPI.addItem(this.userToken, {
+          ...this.newCategoryForm,
+          parent_category: this.currentCategory,
+        })
+        await this.makeFilter()
+      } catch (error) {
+        this.isError = false
+      } finally {
+        this.$refs.addNewCategoryModalCloseButton.click()
+        this.newCategoryForm = {
+          category_item_name: "",
+        }
+        this.isLoading = false
+      }
+    },
+    async updateCategory() {
+      this.isLoading = true
+      try {
+        const response = await categoriesAPI.updateItem(
+          this.userToken,
+          this.currentCategoryForUpdate
+        )
+        const updatedCategory = await response.data
+        this.categoriesList.results = this.categoriesList.results.map(
+          (category) => {
+            if (category.id === updatedCategory.id) {
+              return updatedCategory
+            } else return category
+          }
+        )
+        this.$refs.updateCategoryModalCloseButton.click()
+      } catch (error) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
+    },
+    async showModalForUpdate(categoryID) {
+      this.isError = false
+      try {
+        const response = await categoriesAPI.getItemData(
+          this.userToken,
+          categoryID
+        )
+        this.currentCategoryForUpdate = await response.data
+        let updateModal = this.$refs.categoryUpdate
+        let myModal = new bootstrap.Modal(updateModal, {
+          keyboard: false,
+        })
+        myModal.show()
+      } catch (error) {
+        this.isError = true
+      } finally {
+      }
+    },
     async updatePaginator(url) {},
     makeFilter: debounce(async function () {
       this.isLoading = true
@@ -245,6 +416,28 @@ export default {
         this.isLoading = false
       }
     }, 500),
+    deleteCheckedCategoriesHandler() {
+      this.isLoading = true
+      this.isError = false
+      let requestIds = []
+      this.categoriesList.results.map((category) => {
+        if (category.checked_val) {
+          requestIds.push(category.id)
+        }
+        return
+      })
+      let requests = requestIds.map((id) =>
+        categoriesAPI.deleteItem(this.userToken, id)
+      )
+      Promise.all(requests)
+        .then(async () => {
+          await this.makeFilter()
+        })
+        .catch(() => (this.isError = true))
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
     checkAllHandler(e) {
       if (e.target.checked) {
         this.categoriesList.results = this.categoriesList.results.map(
@@ -287,6 +480,7 @@ export default {
       this.currentCategory = currentCategory
     },
     clickGetIntoCategory(data) {
+      this.isLoading = true
       let {
         id: parentCategory,
         category_item_name,
@@ -305,7 +499,6 @@ export default {
       )
       this.currentCategory = parentCategory
     },
-
     clickBreadCrumb(parentCategory, parent_category_isnull, currentCategory) {
       this.getIntoCategory(
         parentCategory,

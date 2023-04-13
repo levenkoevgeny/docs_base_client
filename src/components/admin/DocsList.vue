@@ -32,7 +32,7 @@
                     >
                       <option selected value="">--------</option>
                       <option
-                        v-for="category in categoriesList"
+                        v-for="category in categoriesList.results"
                         :key="category.id"
                         :value="category.id"
                       >
@@ -113,9 +113,12 @@
   </div>
   <!--Add new doc modal-->
   <div class="container-fluid">
+    <div class="alert alert-danger" role="alert" v-if="isError">
+      Ошибка приложения
+    </div>
     <div>
       <h3>Документы</h3>
-      <small>Все ({{ sortedDocsList.length }})</small>
+      <small>Поиск по названию документа</small>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <div>
           <input type="text" class="form-control" style="width: 400px" />
@@ -131,44 +134,55 @@
           <font-awesome-icon icon="fa-solid fa-plus" /> Добавить
         </button>
       </div>
-      <div class="mt-3">
-        <div v-if="docsList.length > 0">
-          <table class="table table-borderless align-middle">
-            <thead class="align-middle">
-              <tr>
-                <th scope="col">
-                  <div class="mb-3 form-check">
+      <div
+        v-if="isLoading"
+        class="d-flex justify-content-center align-items-center"
+        style="height: 80vh"
+      >
+        <Spinner />
+      </div>
+      <div v-else>
+        <div class="mt-3">
+          <div v-if="sortedDocsList.length > 0">
+            <small>Всего записей в базе - ({{ docsList.count }})</small>
+            <table class="table table-borderless table-hover">
+              <thead class="table-head">
+                <tr>
+                  <th
+                    scope="col"
+                    class="d-flex justify-content-center align-items-center"
+                  >
                     <input type="checkbox" class="form-check-input" />
-                  </div>
-                </th>
-                <th scope="col">Picture</th>
-                <th scope="col">Название документа</th>
-                <th scope="col">Описание документа</th>
-                <th scope="col">Категория</th>
-                <th scope="col">Дата документа</th>
-                <th scope="col"></th>
-              </tr>
-            </thead>
-            <tbody class="align-middle">
-              <tr v-for="doc in docsList" :key="doc.id">
-                <td>
-                  <div class="mb-3 form-check">
-                    <input type="checkbox" class="form-check-input" />
-                  </div>
-                </td>
-                <td><img src="" alt="" /></td>
-                <td>
-                  {{ doc.file_name }}
-                </td>
-                <td>{{ doc.description }}</td>
-                <td>{{ doc.category }}</td>
-                <td>{{ doc.doc_date }}</td>
-                <td><a :href="doc.doc_file">Скачать</a></td>
-              </tr>
-            </tbody>
-          </table>
+                  </th>
+                  <th scope="col">Picture</th>
+                  <th scope="col">Название документа</th>
+                  <th scope="col">Описание документа</th>
+                  <th scope="col">Категория</th>
+                  <th scope="col">Дата документа</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody class="align-middle">
+                <tr v-for="doc in sortedDocsList" :key="doc.id">
+                  <td>
+                    <div class="mb-3 form-check">
+                      <input type="checkbox" class="form-check-input" />
+                    </div>
+                  </td>
+                  <td><img src="" alt="" /></td>
+                  <td>
+                    {{ doc.file_name }}
+                  </td>
+                  <td>{{ doc.description }}</td>
+                  <td>{{ doc.category }}</td>
+                  <td>{{ doc.doc_date }}</td>
+                  <td><a :href="doc.doc_file">Скачать</a></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-else><h5>Список пуст</h5></div>
         </div>
-        <div v-else><h5>Список пуст</h5></div>
       </div>
     </div>
   </div>
@@ -185,14 +199,14 @@ export default {
   components: { Spinner },
   data() {
     return {
-      docsList: [],
+      docsList: { results: [] },
       newDocForm: {
         category: "",
         file_name: "",
         description: "",
         doc_date: "",
       },
-      categoriesList: [],
+      categoriesList: { results: [] },
       isLoading: true,
       isError: false,
     }
@@ -200,11 +214,16 @@ export default {
   async created() {
     try {
       const response = await docsAPI.getItemsList(this.userToken)
-      this.docsList = await response.data.results
+      this.docsList = await response.data
       const categoriesResponse = await categoriesAPI.getItemsList(
-        this.userToken
+        this.userToken,
+        {
+          category_item_name: "",
+          parent_category: "",
+          parent_category_isnull: "",
+        }
       )
-      this.categoriesList = await categoriesResponse.data.results
+      this.categoriesList = await categoriesResponse.data
     } catch (e) {
       this.isError = true
     } finally {
@@ -224,7 +243,7 @@ export default {
       try {
         const response = await docsAPI.addItem(this.userToken, formData)
         const newDoc = await response.data
-        this.docsList.push(newDoc)
+        this.docsList.results.push(newDoc)
       } catch (error) {
         this.isError = true
       } finally {
@@ -246,7 +265,7 @@ export default {
       userToken: "auth/getToken",
     }),
     sortedDocsList() {
-      return this.docsList
+      return this.docsList.results
     },
     // checkedForDeleteCount() {
     //   let counter = 0

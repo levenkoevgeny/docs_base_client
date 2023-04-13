@@ -186,6 +186,7 @@
         </button>
       </div>
     </div>
+
     <div
       v-if="isLoading"
       class="d-flex justify-content-center align-items-center"
@@ -324,11 +325,8 @@ export default {
       event.preventDefault()
       this.isLoading = true
       try {
-        const response = await subdivisionsAPI.addItem(
-          this.userToken,
-          this.newSubdivisionForm
-        )
-        await this.loadData()
+        await subdivisionsAPI.addItem(this.userToken, this.newSubdivisionForm)
+        await this.makeFilter()
       } catch (error) {
         this.isError = true
       } finally {
@@ -410,7 +408,6 @@ export default {
       this.isLoading = true
       this.isError = false
       let requestIds = []
-      let responseIds = []
       this.subdivisionsList.results.map((subdivision) => {
         if (subdivision.checked_val) {
           requestIds.push(subdivision.id)
@@ -421,8 +418,8 @@ export default {
         subdivisionsAPI.deleteItem(this.userToken, id)
       )
       Promise.all(requests)
-        .then(async (responses) => {
-          await this.loadData()
+        .then(async () => {
+          await this.makeFilter()
         })
         .catch(() => (this.isError = true))
         .finally(() => {
