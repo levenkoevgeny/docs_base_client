@@ -4,11 +4,15 @@ import { authHeaders } from "@/api/authAPI"
 let base_url = "docs"
 
 export const docsAPI = {
-  async getItemsList(token) {
+  async getItemsList(token, searchForm) {
+    let { file_name = "", category = "", region = "", user = "" } = searchForm
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?file_name__icontains=${file_name}&category=${category}&region=${region}&user=${user}`,
       authHeaders(token)
     )
+  },
+  async updateList(url, token) {
+    return axios.get(url, authHeaders(token))
   },
   async getItemData(token, itemId) {
     return axios.get(

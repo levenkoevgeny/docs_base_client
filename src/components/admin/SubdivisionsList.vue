@@ -278,7 +278,7 @@
 import Spinner from "@/components/common/Spinner"
 import { mapGetters } from "vuex"
 import { subdivisionsAPI } from "@/api/subdivisionsAPI"
-import { regionsAPI } from "@/api/regionAPI"
+import { regionsAPI } from "@/api/regionsAPI"
 import { getFormattedDate, getFormattedTime } from "@/utils"
 import debounce from "lodash.debounce"
 
