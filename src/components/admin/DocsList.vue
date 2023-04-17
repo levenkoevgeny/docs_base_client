@@ -231,15 +231,11 @@
                   <div class="mb-3">
                     <label class="form-label">Прикрепите файл</label>
                     <br />
-                    <small>{{
-                      decodeURIComponent(currentDocForUpdate.doc_file)
-                    }}</small>
                     <input
                       type="file"
-                      ref="file"
+                      ref="fileForUpdate"
                       name="doc_file"
                       class="form-control"
-                      required
                     />
                   </div>
                 </div>
@@ -268,7 +264,7 @@
             >
               Закрыть
             </button>
-            <button type="submit" class="btn btn-primary">Добавить</button>
+            <button type="submit" class="btn btn-primary">Сохранить</button>
           </div>
         </form>
       </div>
@@ -406,6 +402,7 @@ import { regionsAPI } from "@/api/regionsAPI"
 import Spinner from "@/components/common/Spinner"
 import { mapGetters } from "vuex"
 import debounce from "lodash.debounce"
+import axios from "axios"
 
 export default {
   name: "DocsList",
@@ -506,6 +503,27 @@ export default {
         const response = await docsAPI.getItemData(this.userToken, docID)
         this.currentDocForUpdate = await response.data
 
+        const srcToFile = async (src, fileName) => {
+          const response = await axios.get(src, {
+            responseType: "blob",
+          })
+          const mimeType = response.headers["content-type"]
+          return new File(
+            [response.data],
+            this.getFileName(this.currentDocForUpdate.doc_file),
+            {
+              type: mimeType,
+            }
+          )
+        }
+        const myFile = await srcToFile(
+          this.currentDocForUpdate.doc_file,
+          "doc_file.txt"
+        )
+
+        const dataTransfer = new DataTransfer()
+        dataTransfer.items.add(myFile)
+        this.$refs.fileForUpdate.files = dataTransfer.files
         let updateModal = this.$refs.docUpdate
         let myModal = new bootstrap.Modal(updateModal, {
           keyboard: false,
@@ -516,7 +534,30 @@ export default {
       } finally {
       }
     },
-    async updateDoc() {},
+    async updateDoc() {
+      this.isLoading = true
+      this.isError = false
+      let formData = new FormData()
+      formData.append("doc_file", this.$refs.fileForUpdate.files[0])
+      formData.append("category", this.currentDocForUpdate.category)
+      formData.append("region", this.currentDocForUpdate.region)
+      formData.append("file_name", this.currentDocForUpdate.file_name)
+      formData.append("description", this.currentDocForUpdate.description)
+      formData.append("doc_date", this.currentDocForUpdate.doc_date)
+      formData.append("user", this.userData.id)
+      try {
+        const response = await docsAPI.updateItem(
+          this.userToken,
+          this.currentDocForUpdate.id,
+          formData
+        )
+        const updatedDoc = await response.data
+      } catch (error) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
+    },
     makeFilter: debounce(async function () {
       this.isLoading = true
       try {
@@ -543,6 +584,10 @@ export default {
           checked_val: false,
         }))
       }
+    },
+    getFileName(fullPath) {
+      let decodedPath = decodeURIComponent(fullPath)
+      return decodedPath.replace("http://localhost:8000/media/docs/", "")
     },
   },
   computed: {

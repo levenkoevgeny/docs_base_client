@@ -29,9 +29,9 @@ export const docsAPI = {
     )
   },
 
-  async updateItem(token, itemData) {
+  async updateItem(token, id, itemData) {
     return axios.put(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemData.id}/`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${id}/`,
       itemData,
       authHeaders(token)
     )
