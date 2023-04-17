@@ -4,48 +4,28 @@
   <table class="table table-borderless align-middle">
     <thead class="align-middle">
       <tr>
-        <th scope="col">
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </th>
         <th scope="col"></th>
-        <th scope="col">Подразделение</th>
         <th scope="col">Название документа</th>
-        <th scope="col">Дата документа</th>
         <th scope="col">Описание документа</th>
         <th scope="col">Категория</th>
-        <th scope="col"></th>
+        <th scope="col">Дата документа</th>
       </tr>
     </thead>
     <tbody class="align-middle">
-      <tr v-for="doc in latestDocsList" :key="doc.id">
-        <td>
-          <div class="mb-3 form-check">
-            <input type="checkbox" class="form-check-input" />
-          </div>
-        </td>
+      <tr v-for="doc in sortedDocsList" :key="doc.id">
         <td><img src="" alt="" /></td>
-        <td>
-          <div class="d-flex">
-            <div class="text-center">
-              <img src="" class="rounded" alt="..." />
-            </div>
-            <div>Подразделение 1</div>
-          </div>
-        </td>
         <td>
           {{ doc.file_name }}
         </td>
-        <td>{{ doc.doc_date }}</td>
-        <td>{{ doc.description }}</td>
+        <td>
+          {{ doc.description }}
+        </td>
         <td>{{ doc.category }}</td>
-        <td><a :href="doc.doc_file">Скачать</a></td>
+        <td>{{ doc.doc_date }}</td>
       </tr>
     </tbody>
   </table>
   <p>
-    5 из 150 документов
     <router-link to="/admin/docs"> Показать все ></router-link>
   </p>
 </template>
@@ -61,15 +41,25 @@ export default {
   components: { AdminNav, Spinner },
   data() {
     return {
-      latestDocsList: [],
+      latestDocsList: { results: [] },
+      searchForm: {
+        file_name: "",
+        description: "",
+        doc_date: "",
+        category: "",
+        region: "",
+      },
       isLoading: true,
       isError: false,
     }
   },
   async created() {
     try {
-      const response = await docsAPI.getItemsList(this.userToken)
-      this.latestDocsList = await response.data.results
+      const response = await docsAPI.getItemsList(
+        this.userToken,
+        this.searchForm
+      )
+      this.latestDocsList = await response.data
     } catch (e) {
       this.isError = true
     } finally {
@@ -82,7 +72,7 @@ export default {
       userToken: "auth/getToken",
     }),
     sortedDocsList() {
-      return this.latestDocsList
+      return this.latestDocsList.results.slice(0, 4)
     },
   },
 }

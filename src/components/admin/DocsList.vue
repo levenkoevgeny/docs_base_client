@@ -11,7 +11,7 @@
       <div class="modal-content">
         <form @submit.prevent="addNewDoc">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Новый документ</h5>
+            <h5 class="modal-title">Новый документ</h5>
             <button
               type="button"
               class="btn-close"
@@ -137,7 +137,7 @@
   <!--Update doc modal-->
   <div
     class="modal fade"
-    id="addDocModal"
+    id="updateDocModal"
     tabindex="-1"
     aria-labelledby="exampleModalLabel"
     aria-hidden="true"
@@ -323,10 +323,7 @@
             <table class="table table-borderless table-hover">
               <thead class="table-head">
                 <tr>
-                  <th
-                    scope="col"
-                    class="d-flex justify-content-center align-items-center"
-                  >
+                  <th scope="col" class="text-center">
                     <input
                       type="checkbox"
                       class="form-check-input"
@@ -346,6 +343,7 @@
                   v-for="doc in sortedDocsList"
                   :key="doc.id"
                   @click="showModalForUpdate(doc.id)"
+                  class="cursor-pointer"
                 >
                   <td class="text-center">
                     <input
@@ -587,7 +585,14 @@ export default {
     },
     getFileName(fullPath) {
       let decodedPath = decodeURIComponent(fullPath)
-      return decodedPath.replace("http://localhost:8000/media/docs/", "")
+      let baseURL =
+        process.env.VUE_APP_BACKEND_PROTOCOL +
+        "://" +
+        process.env.VUE_APP_BACKEND_HOST +
+        ":" +
+        process.env.VUE_APP_BACKEND_PORT +
+        "/media/docs/"
+      return decodedPath.replace(baseURL, "")
     },
   },
   computed: {

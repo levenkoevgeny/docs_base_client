@@ -201,10 +201,7 @@
         <table class="table table-borderless table-hover">
           <thead class="table-head">
             <tr>
-              <th
-                scope="col"
-                class="d-flex justify-content-center align-items-center"
-              >
+              <th scope="col" class="text-center">
                 <input
                   type="checkbox"
                   class="form-check-input"

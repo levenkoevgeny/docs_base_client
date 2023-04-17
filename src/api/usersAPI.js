@@ -4,12 +4,35 @@ import { authHeaders } from "@/api/authAPI"
 let base_url = "users"
 
 export const usersAPI = {
-  async getItemsList(token) {
+  async getItemsList(
+    token,
+    searchForm = {
+      username: "",
+      last_name: "",
+      subdivision: "",
+      is_superuser: "",
+      is_staff: "",
+      is_active: "",
+    }
+  ) {
+    let {
+      username,
+      last_name,
+      subdivision,
+      is_superuser,
+      is_staff,
+      is_active,
+    } = searchForm
     return axios.get(
       `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/`,
       authHeaders(token)
     )
   },
+
+  async updateList(url, token) {
+    return axios.get(url, authHeaders(token))
+  },
+
   async getItemData(token, itemId) {
     return axios.get(
       `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemId}`,
@@ -26,7 +49,7 @@ export const usersAPI = {
   },
 
   async updateItem(token, itemData) {
-    return axios.put(
+    return axios.patch(
       `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemData.id}/`,
       itemData,
       authHeaders(token)
@@ -36,6 +59,14 @@ export const usersAPI = {
   async deleteItem(token, itemId) {
     return axios.delete(
       `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${itemId}/`,
+      authHeaders(token)
+    )
+  },
+
+  async updatePassword(token, id, newPassword) {
+    return axios.post(
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/${id}/set_password/`,
+      newPassword,
       authHeaders(token)
     )
   },
