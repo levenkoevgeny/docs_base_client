@@ -18,6 +18,7 @@ import { faUserAlt } from "@fortawesome/free-solid-svg-icons"
 import { faKey } from "@fortawesome/free-solid-svg-icons"
 import { faLock } from "@fortawesome/free-solid-svg-icons"
 import { faUnlock } from "@fortawesome/free-solid-svg-icons"
+import { faTurnDown } from "@fortawesome/free-solid-svg-icons"
 
 library.add(faUsers)
 library.add(faUser)
@@ -32,6 +33,7 @@ library.add(faUserAlt)
 library.add(faKey)
 library.add(faLock)
 library.add(faUnlock)
+library.add(faTurnDown)
 
 createApp(App)
   .component("font-awesome-icon", FontAwesomeIcon)

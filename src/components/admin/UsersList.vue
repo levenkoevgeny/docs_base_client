@@ -136,7 +136,7 @@
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
-              ref="addNewDocModalCloseButton"
+              ref="addNewUserModalCloseButton"
             >
               Закрыть
             </button>
@@ -272,7 +272,7 @@
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
-              ref="addNewDocModalCloseButton"
+              ref="updateUserModalCloseButton"
             >
               Закрыть
             </button>
@@ -353,93 +353,95 @@
         <h3>Пользователи</h3>
       </div>
 
-      <div class="row">
-        <div class="col-4">
-          <div class="mb-3">
-            <label class="form-label">Логин</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="searchForm.username"
-            />
+      <div class="shadow p-3 mb-5 bg-body rounded">
+        <h5>Поиск</h5>
+        <div class="row">
+          <div class="col-4">
+            <div class="mb-3">
+              <label class="form-label">Логин</label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="searchForm.username"
+              />
+            </div>
           </div>
-        </div>
-        <div class="col-4">
-          <div class="mb-3">
-            <label class="form-label">Фамилия</label>
-            <input
-              type="text"
-              class="form-control"
-              v-model="searchForm.last_name"
-            />
+          <div class="col-4">
+            <div class="mb-3">
+              <label class="form-label">Фамилия</label>
+              <input
+                type="text"
+                class="form-control"
+                v-model="searchForm.last_name"
+              />
+            </div>
           </div>
-        </div>
-        <div class="col-4">
-          <div class="mb-3">
-            <label class="form-label">Подразделение</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="searchForm.subdivision"
-            >
-              <option selected value="">----------</option>
-              <option
-                v-for="subdivision in subdivisionsList.results"
-                :key="subdivision.id"
-                :value="subdivision.id"
+          <div class="col-4">
+            <div class="mb-3">
+              <label class="form-label">Подразделение</label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="searchForm.subdivision"
               >
-                {{ subdivision.subdivision_name }}
-              </option>
-            </select>
+                <option selected value="">----------</option>
+                <option
+                  v-for="subdivision in subdivisionsList.results"
+                  :key="subdivision.id"
+                  :value="subdivision.id"
+                >
+                  {{ subdivision.subdivision_name }}
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-4">
+            <div class="mb-3">
+              <label class="form-label">Суперпользователь</label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="searchForm.is_superuser"
+              >
+                <option selected value="">----------</option>
+                <option value="true">Да</option>
+                <option value="false">Нет</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="mb-3">
+              <label class="form-label">Персонал</label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="searchForm.is_staff"
+              >
+                <option selected value="">----------</option>
+                <option value="true">Да</option>
+                <option value="false">Нет</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="mb-3">
+              <label class="form-label">Активный</label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="searchForm.is_active"
+              >
+                <option selected value="">----------</option>
+                <option value="true">Да</option>
+                <option value="false">Нет</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-4">
-          <div class="mb-3">
-            <label class="form-label">Суперпользователь</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="searchForm.is_superuser"
-            >
-              <option selected value="">----------</option>
-              <option value="true">Да</option>
-              <option value="false">Нет</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-4">
-          <div class="mb-3">
-            <label class="form-label">Персонал</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="searchForm.is_staff"
-            >
-              <option selected value="">----------</option>
-              <option value="true">Да</option>
-              <option value="false">Нет</option>
-            </select>
-          </div>
-        </div>
-        <div class="col-4">
-          <div class="mb-3">
-            <label class="form-label">Активный</label>
-            <select
-              class="form-select"
-              aria-label="Default select example"
-              v-model="searchForm.is_active"
-            >
-              <option selected value="">----------</option>
-              <option value="true">Да</option>
-              <option value="false">Нет</option>
-            </select>
-          </div>
-        </div>
-      </div>
-
-      <div class="d-flex flex-row justify-content-end align-items-center">
+      <div class="d-flex flex-row justify-content-end align-items-center mt-3">
         <div>
           <button
             @click="deleteCheckedUsersHandler"
@@ -471,7 +473,9 @@
       </div>
       <div v-else>
         <div class="mt-3">
-          <small>Все ({{ usersList.count }})</small>
+          <small
+            ><b>Всего записей - ({{ usersList.count }})</b></small
+          >
           <div v-if="sortedUsersList.length > 0">
             <table class="table table-borderless table-hover">
               <thead class="table-head">
@@ -485,11 +489,11 @@
                   </th>
                   <th scope="col">Логин</th>
                   <th scope="col">Фамилия</th>
-                  <th scope="col">Имя</th>
-                  <th scope="col">Администратор</th>
-                  <th scope="col">Персонал</th>
-                  <th scope="col">Активный</th>
-                  <th scope="col">Дата создания</th>
+                  <th scope="col">Подразделение</th>
+                  <th scope="col" class="text-center">Администратор</th>
+                  <th scope="col" class="text-center">Персонал</th>
+                  <th scope="col" class="text-center">Активный</th>
+                  <th scope="col" class="text-center">Дата создания</th>
                   <th scope="col"></th>
                 </tr>
               </thead>
@@ -512,21 +516,23 @@
                     {{ user.username }}
                   </td>
                   <td>{{ user.last_name }}</td>
-                  <td>{{ user.first_name }}</td>
-                  <td v-if="user.is_superuser">
+                  <td>{{ user.get_subdivision }}</td>
+                  <td v-if="user.is_superuser" class="text-center">
                     <font-awesome-icon icon="fa-solid fa-check" />
                   </td>
-                  <td v-else></td>
+                  <td v-else class="text-center"></td>
 
-                  <td v-if="user.is_staff">
+                  <td v-if="user.is_staff" class="text-center">
                     <font-awesome-icon icon="fa-solid fa-check" />
                   </td>
-                  <td v-else></td>
-                  <td v-if="user.is_active">
+                  <td v-else class="text-center"></td>
+                  <td v-if="user.is_active" class="text-center">
                     <font-awesome-icon icon="fa-solid fa-unlock" />
                   </td>
-                  <td v-else><font-awesome-icon icon="fa-solid fa-lock" /></td>
-                  <td>
+                  <td v-else class="text-center">
+                    <font-awesome-icon icon="fa-solid fa-lock" />
+                  </td>
+                  <td class="text-center">
                     {{ getFormattedDateComponent(user.date_joined) }}
                     {{ getFormattedTimeComponent(user.date_joined) }}
                   </td>
@@ -625,28 +631,35 @@ export default {
     }
   },
   async created() {
-    try {
-      const response = await usersAPI.getItemsList(this.userToken)
-      this.usersList = await response.data
-      const responseSubdivision = await subdivisionsAPI.getItemsList(
-        this.userToken
-      )
-      this.subdivisionsList = await responseSubdivision.data
-    } catch (e) {
-      this.isError = true
-    } finally {
-      this.isLoading = false
-    }
+    await this.loadData()
   },
   methods: {
+    async loadData() {
+      try {
+        const response = await usersAPI.getItemsList(
+          this.userToken,
+          this.searchForm
+        )
+        this.usersList = await response.data
+        const responseSubdivision = await subdivisionsAPI.getItemsList(
+          this.userToken
+        )
+        this.subdivisionsList = await responseSubdivision.data
+      } catch (e) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
+    },
     async addNewUser() {
       this.isLoading = true
       try {
         await usersAPI.addItem(this.userToken, this.newUserForm)
+        await this.loadData()
       } catch (error) {
         this.isError = true
       } finally {
-        this.isLoading = false
+        this.$refs.addNewUserModalCloseButton.click()
         this.newUserForm = {
           username: "",
           password: "",
@@ -657,6 +670,7 @@ export default {
           last_name: "",
           subdivision: "",
         }
+        this.isLoading = false
       }
     },
     async getCurrentUser(userID) {
@@ -667,7 +681,6 @@ export default {
       this.isError = false
       try {
         await this.getCurrentUser(userID)
-
         let updateModal = this.$refs.userUpdate
         let myModal = new bootstrap.Modal(updateModal, {
           keyboard: false,
@@ -682,7 +695,6 @@ export default {
       this.isError = false
       try {
         await this.getCurrentUser(userID)
-
         let updateModal = this.$refs.userUpdatePassword
         let myModal = new bootstrap.Modal(updateModal, {
           keyboard: false,
@@ -698,16 +710,17 @@ export default {
       delete this.currentUserForUpdate.password
       try {
         await usersAPI.updateItem(this.userToken, this.currentUserForUpdate)
+        await this.loadData()
       } catch (error) {
         this.isError = true
       } finally {
+        this.$refs.updateUserModalCloseButton.click()
         this.isLoading = false
       }
     },
     async deleteCheckedUsersHandler() {
       this.isLoading = true
       this.isError = false
-
       let requestIds = []
       this.usersList.results.map((item) => {
         if (item.checked_val) {
@@ -720,7 +733,7 @@ export default {
       )
       Promise.all(requests)
         .then(async () => {
-          await this.makeFilter()
+          await this.loadData()
         })
         .catch(() => (this.isError = true))
         .finally(() => {
@@ -752,7 +765,9 @@ export default {
         this.isLoading = false
       }
     },
-    makeFilter: debounce(async function () {}, 500),
+    debouncedSearch: debounce(async function () {
+      await this.loadData()
+    }, 500),
     checkAllHandler(e) {
       if (e.target.checked) {
         this.usersList.results = this.usersList.results.map((user) => ({
@@ -791,7 +806,14 @@ export default {
       return counter
     },
   },
-  watch: {},
+  watch: {
+    searchForm: {
+      handler(newValue, oldValue) {
+        this.debouncedSearch()
+      },
+      deep: true,
+    },
+  },
 }
 </script>
 

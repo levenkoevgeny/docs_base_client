@@ -260,7 +260,7 @@
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
-              ref="addNewDocModalCloseButton"
+              ref="updateDocModalCloseButton"
             >
               Закрыть
             </button>
@@ -276,121 +276,167 @@
     <div class="alert alert-danger" role="alert" v-if="isError">
       Ошибка приложения
     </div>
-    <div>
-      <div class="d-flex align-items-center mb-3">
-        <h5><font-awesome-icon icon="fa-solid fa-file" />&nbsp;&nbsp;</h5>
-        <h3>Документы</h3>
-      </div>
-      <small>Поиск по названию документа</small>
-      <div class="d-flex flex-row justify-content-between align-items-center">
-        <div>
-          <input
-            type="text"
-            class="form-control"
-            style="width: 400px"
-            v-model="searchForm.file_name"
-          />
-        </div>
-        <div>
-          <button
-            @click="deleteCheckedSubdivisionsHandler"
-            style="height: 40px; width: 200px"
-            class="btn btn-danger"
-            v-if="checkedForDeleteCount"
-          >
-            Удалить ({{ checkedForDeleteCount }})
-          </button>
-          <button
-            style="height: 40px; width: 200px"
-            type="button"
-            class="btn btn-primary ms-2"
-            data-bs-toggle="modal"
-            data-bs-target="#addDocModal"
-          >
-            <font-awesome-icon icon="fa-solid fa-plus" />
-            Добавить
-          </button>
-        </div>
-      </div>
-      <div
-        v-if="isLoading"
-        class="d-flex justify-content-center align-items-center"
-        style="height: 80vh"
-      >
-        <Spinner />
-      </div>
-      <div v-else>
-        <div class="mt-3">
-          <div v-if="sortedDocsList.length > 0">
-            <small>Всего записей в базе - ({{ docsList.count }})</small>
-            <table class="table table-borderless table-hover">
-              <thead class="table-head">
-                <tr>
-                  <th scope="col" class="text-center">
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      @change="checkAllHandler($event)"
-                    />
-                  </th>
-                  <th scope="col">Picture</th>
-                  <th scope="col">Название документа</th>
-                  <th scope="col">Описание документа</th>
-                  <th scope="col">Категория</th>
-                  <th scope="col">Дата документа</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody class="align-middle">
-                <tr
-                  v-for="doc in sortedDocsList"
-                  :key="doc.id"
-                  @click="showModalForUpdate(doc.id)"
-                  class="cursor-pointer"
-                >
-                  <td class="text-center">
-                    <input
-                      type="checkbox"
-                      class="form-check-input"
-                      v-model="doc.checked_val"
-                      @click.stop
-                    />
-                  </td>
-                  <td><img src="" alt="" /></td>
-                  <td>
-                    {{ doc.file_name }}
-                  </td>
-                  <td>{{ doc.description }}</td>
-                  <td>{{ doc.category }}</td>
-                  <td>{{ doc.doc_date }}</td>
-                  <td><a :href="doc.doc_file">Скачать</a></td>
-                </tr>
-              </tbody>
-            </table>
-            <nav>
-              <ul class="pagination pagination-md">
-                <li class="page-item" :class="{ disabled: !docsList.previous }">
-                  <button
-                    class="page-link"
-                    @click="updatePaginator(docsList.previous)"
-                  >
-                    <span aria-hidden="true">&laquo;</span>
-                  </button>
-                </li>
-                <li class="mx-2"></li>
-                <li class="page-item" :class="{ disabled: !docsList.next }">
-                  <button
-                    class="page-link"
-                    @click="updatePaginator(docsList.next)"
-                  >
-                    <span aria-hidden="true">&raquo;</span>
-                  </button>
-                </li>
-              </ul>
-            </nav>
+
+    <div class="d-flex align-items-center mb-3">
+      <h5><font-awesome-icon icon="fa-solid fa-file" />&nbsp;&nbsp;</h5>
+      <h3>Документы</h3>
+    </div>
+
+    <div class="shadow p-3 mb-5 bg-body rounded">
+      <h5>Поиск</h5>
+
+      <div class="row">
+        <div class="col-4">
+          <div class="mb-3">
+            <label class="form-label">Название документа</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="searchForm.file_name"
+            />
           </div>
-          <div v-else><h5>Список пуст</h5></div>
         </div>
+        <div class="col-4">
+          <div class="mb-3">
+            <label class="form-label">Категория документа</label>
+            <select class="form-select" v-model="searchForm.category">
+              <option selected value="">--------</option>
+              <option
+                :value="category.id"
+                :key="category.id"
+                v-for="category in categoriesList.results"
+              >
+                {{ category.category_item_name }}
+              </option>
+            </select>
+          </div>
+        </div>
+        <div class="col-4">
+          <div class="mb-3">
+            <label class="form-label">Область</label>
+            <select class="form-select" v-model="searchForm.region">
+              <option selected value="">--------</option>
+              <option
+                :value="region.id"
+                :key="region.id"
+                v-for="region in regionsList.results"
+              >
+                {{ region.region }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mt-3">
+      <div>
+        <button
+          @click="deleteCheckedDocsHandler"
+          style="height: 40px; width: 200px"
+          class="btn btn-danger"
+          v-if="checkedForDeleteCount"
+        >
+          Удалить ({{ checkedForDeleteCount }})
+        </button>
+        <button
+          style="height: 40px; width: 200px"
+          type="button"
+          class="btn btn-primary ms-2"
+          data-bs-toggle="modal"
+          data-bs-target="#addDocModal"
+        >
+          <font-awesome-icon icon="fa-solid fa-plus" />
+          Добавить
+        </button>
+      </div>
+    </div>
+    <div
+      v-if="isLoading"
+      class="d-flex justify-content-center align-items-center"
+      style="height: 80vh"
+    >
+      <Spinner />
+    </div>
+    <div v-else>
+      <div class="mt-3">
+        <div v-if="sortedDocsList.length > 0">
+          <small
+            ><b>Всего записей - ({{ docsList.count }})</b></small
+          >
+          <table class="table table-borderless table-hover">
+            <thead class="table-head">
+              <tr>
+                <th scope="col" class="text-center">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    @change="checkAllHandler($event)"
+                  />
+                </th>
+                <th scope="col">Название документа</th>
+                <th scope="col">Категория документа</th>
+                <th scope="col">Регион</th>
+                <th scope="col">Описание документа</th>
+                <th scope="col">Категория</th>
+                <th scope="col">Дата документа</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody class="align-middle">
+              <tr
+                v-for="doc in sortedDocsList"
+                :key="doc.id"
+                @click="showModalForUpdate(doc.id)"
+                class="cursor-pointer"
+              >
+                <td class="text-center">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    v-model="doc.checked_val"
+                    @click.stop
+                  />
+                </td>
+
+                <td>
+                  <font-awesome-icon icon="fa-solid fa-file" />&nbsp;&nbsp;
+                  {{ doc.file_name }}
+                </td>
+
+                <td>{{ doc.get_category }}</td>
+                <td>{{ doc.get_region }}</td>
+
+                <td>{{ doc.description }}</td>
+                <td>{{ doc.category }}</td>
+                <td>{{ doc.doc_date }}</td>
+                <td><a :href="doc.doc_file">Скачать</a></td>
+              </tr>
+            </tbody>
+          </table>
+          <nav>
+            <ul class="pagination pagination-md">
+              <li class="page-item" :class="{ disabled: !docsList.previous }">
+                <button
+                  class="page-link"
+                  @click="updatePaginator(docsList.previous)"
+                >
+                  <span aria-hidden="true">&laquo;</span>
+                </button>
+              </li>
+              <li class="mx-2"></li>
+              <li class="page-item" :class="{ disabled: !docsList.next }">
+                <button
+                  class="page-link"
+                  @click="updatePaginator(docsList.next)"
+                >
+                  <span aria-hidden="true">&raquo;</span>
+                </button>
+              </li>
+            </ul>
+          </nav>
+        </div>
+        <div v-else><h5>Список пуст</h5></div>
       </div>
     </div>
   </div>
@@ -422,10 +468,9 @@ export default {
       },
       searchForm: {
         file_name: "",
-        description: "",
-        doc_date: "",
         category: "",
         region: "",
+        user: "",
       },
       currentDocForUpdate: {},
       isLoading: true,
@@ -433,30 +478,28 @@ export default {
     }
   },
   async created() {
-    try {
-      const response = await docsAPI.getItemsList(
-        this.userToken,
-        this.searchForm
-      )
-      this.docsList = await response.data
-      const categoriesResponse = await categoriesAPI.getItemsList(
-        this.userToken,
-        {
-          category_item_name: "",
-          parent_category: "",
-          parent_category_isnull: "",
-        }
-      )
-      this.categoriesList = await categoriesResponse.data
-      const regionsResponse = await regionsAPI.getItemsList(this.userToken)
-      this.regionsList = await regionsResponse.data
-    } catch (e) {
-      this.isError = true
-    } finally {
-      this.isLoading = false
-    }
+    await this.loadData()
   },
   methods: {
+    async loadData() {
+      try {
+        const response = await docsAPI.getItemsList(
+          this.userToken,
+          this.searchForm
+        )
+        this.docsList = await response.data
+        const categoriesResponse = await categoriesAPI.getItemsList(
+          this.userToken
+        )
+        this.categoriesList = await categoriesResponse.data
+        const regionsResponse = await regionsAPI.getItemsList(this.userToken)
+        this.regionsList = await regionsResponse.data
+      } catch (e) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
+    },
     async addNewDoc(event) {
       event.preventDefault()
       this.isLoading = true
@@ -469,9 +512,8 @@ export default {
       formData.append("doc_date", this.newDocForm.doc_date)
       formData.append("user", this.userData.id)
       try {
-        const response = await docsAPI.addItem(this.userToken, formData)
-        const newDoc = await response.data
-        this.docsList.results.push(newDoc)
+        await docsAPI.addItem(this.userToken, formData)
+        await this.loadData()
       } catch (error) {
         this.isError = true
       } finally {
@@ -546,31 +588,43 @@ export default {
       formData.append("doc_date", this.currentDocForUpdate.doc_date)
       formData.append("user", this.userData.id)
       try {
-        const response = await docsAPI.updateItem(
+        await docsAPI.updateItem(
           this.userToken,
           this.currentDocForUpdate.id,
           formData
         )
-        const updatedDoc = await response.data
+        await this.loadData()
       } catch (error) {
         this.isError = true
       } finally {
+        this.$refs.updateDocModalCloseButton.click()
         this.isLoading = false
       }
     },
-    makeFilter: debounce(async function () {
+    async deleteCheckedDocsHandler() {
       this.isLoading = true
-      try {
-        const response = await docsAPI.getItemsList(
-          this.userToken,
-          this.searchForm
-        )
-        this.docsList = await response.data
-      } catch (error) {
-        this.isError = true
-      } finally {
-        this.isLoading = false
-      }
+      this.isError = false
+      let requestIds = []
+      this.docsList.results.map((doc) => {
+        if (doc.checked_val) {
+          requestIds.push(doc.id)
+        }
+        return
+      })
+      let requests = requestIds.map((id) =>
+        docsAPI.deleteItem(this.userToken, id)
+      )
+      Promise.all(requests)
+        .then(async () => {
+          await this.loadData()
+        })
+        .catch(() => (this.isError = true))
+        .finally(() => {
+          this.isLoading = false
+        })
+    },
+    debouncedSearch: debounce(async function () {
+      await this.loadData()
     }, 500),
     checkAllHandler(e) {
       if (e.target.checked) {
@@ -618,7 +672,7 @@ export default {
   watch: {
     searchForm: {
       handler(newValue, oldValue) {
-        this.makeFilter()
+        this.debouncedSearch()
       },
       deep: true,
     },

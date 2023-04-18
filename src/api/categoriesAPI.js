@@ -4,7 +4,14 @@ import { authHeaders } from "@/api/authAPI"
 let base_url = "categories"
 
 export const categoriesAPI = {
-  async getItemsList(token, searchForm) {
+  async getItemsList(
+    token,
+    searchForm = {
+      category_item_name: "",
+      parent_category: "",
+      parent_category_isnull: "",
+    }
+  ) {
     let { category_item_name, parent_category, parent_category_isnull } =
       searchForm
     return axios.get(

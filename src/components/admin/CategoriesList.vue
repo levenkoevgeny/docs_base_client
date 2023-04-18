@@ -121,16 +121,23 @@
       <h3>Категории</h3>
     </div>
 
-    <small>Поиск по названию</small>
-    <div class="d-flex flex-row justify-content-between align-items-center">
-      <div>
-        <input
-          type="text"
-          class="form-control"
-          style="width: 400px"
-          v-model="searchForm.category_item_name"
-        />
+    <div class="shadow p-3 mb-5 bg-body rounded">
+      <h5>Поиск</h5>
+      <div class="row">
+        <div class="col-6">
+          <div class="mb-3">
+            <label class="form-label">Название категории</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="searchForm.category_item_name"
+            />
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mt-3">
       <div>
         <button
           @click="deleteCheckedCategoriesHandler"
@@ -205,15 +212,14 @@
         </ol>
       </nav>
 
-      <div v-if="sortedCategoriesList.length > 0" class="mt-3">
-        <small>Всего записей - ({{ categoriesList.count }})</small>
+      <div v-if="sortedCategoriesList.length > 0">
+        <small
+          ><b>Всего записей - ({{ categoriesList.count }})</b></small
+        >
         <table class="table table-borderless table-hover">
           <thead class="table-head">
             <tr>
-              <th
-                scope="col"
-                class="d-flex justify-content-center align-items-center"
-              >
+              <th scope="col" class="text-center">
                 <input
                   type="checkbox"
                   class="form-check-input"
@@ -249,7 +255,8 @@
               </td>
               <td>
                 <button
-                  class="btn btn-link"
+                  type="button"
+                  class="btn btn-secondary"
                   @click.stop="
                     clickGetIntoCategory({
                       ...category,
@@ -257,7 +264,7 @@
                     })
                   "
                 >
-                  Переход
+                  <font-awesome-icon icon="fa-solid fa-turn-down" /> Переход
                 </button>
               </td>
             </tr>
@@ -334,19 +341,22 @@ export default {
     }
   },
   async created() {
-    try {
-      const response = await categoriesAPI.getItemsList(
-        this.userToken,
-        this.searchForm
-      )
-      this.categoriesList = await response.data
-    } catch (e) {
-      this.isError = true
-    } finally {
-      this.isLoading = false
-    }
+    await this.loadData()
   },
   methods: {
+    async loadData() {
+      try {
+        const response = await categoriesAPI.getItemsList(
+          this.userToken,
+          this.searchForm
+        )
+        this.categoriesList = await response.data
+      } catch (e) {
+        this.isError = true
+      } finally {
+        this.isLoading = false
+      }
+    },
     async addNewCategory() {
       this.isLoading = true
       try {
@@ -354,7 +364,7 @@ export default {
           ...this.newCategoryForm,
           parent_category: this.currentCategory,
         })
-        await this.makeFilter()
+        await this.loadData()
       } catch (error) {
         this.isError = false
       } finally {
@@ -368,18 +378,11 @@ export default {
     async updateCategory() {
       this.isLoading = true
       try {
-        const response = await categoriesAPI.updateItem(
+        await categoriesAPI.updateItem(
           this.userToken,
           this.currentCategoryForUpdate
         )
-        const updatedCategory = await response.data
-        this.categoriesList.results = this.categoriesList.results.map(
-          (category) => {
-            if (category.id === updatedCategory.id) {
-              return updatedCategory
-            } else return category
-          }
-        )
+        await this.loadData()
         this.$refs.updateCategoryModalCloseButton.click()
       } catch (error) {
         this.isError = true
@@ -406,19 +409,8 @@ export default {
       }
     },
     async updatePaginator(url) {},
-    makeFilter: debounce(async function () {
-      this.isLoading = true
-      try {
-        const response = await categoriesAPI.getItemsList(
-          this.userToken,
-          this.searchForm
-        )
-        this.categoriesList = await response.data
-      } catch (error) {
-        this.isError = true
-      } finally {
-        this.isLoading = false
-      }
+    debouncedSearch: debounce(async function () {
+      await this.loadData()
     }, 500),
     deleteCheckedCategoriesHandler() {
       this.isLoading = true
@@ -435,7 +427,7 @@ export default {
       )
       Promise.all(requests)
         .then(async () => {
-          await this.makeFilter()
+          await this.loadData()
         })
         .catch(() => (this.isError = true))
         .finally(() => {
@@ -551,7 +543,7 @@ export default {
   watch: {
     searchForm: {
       handler(newValue, oldValue) {
-        this.makeFilter()
+        this.debouncedSearch()
       },
       deep: true,
     },

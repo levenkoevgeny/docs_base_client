@@ -20,7 +20,7 @@
               to="/admin/subdivisions"
               class="link-secondary"
               style="text-decoration: none"
-              ><font-awesome-icon icon="fa-solid fa-users" />
+              ><font-awesome-icon icon="fa-solid fa-users" />&nbsp;
               Подразделения</router-link
             >
           </li>
@@ -29,7 +29,7 @@
               to="/admin/users"
               class="link-secondary"
               style="text-decoration: none"
-              ><font-awesome-icon icon="fa-solid fa-user" />
+              ><font-awesome-icon icon="fa-solid fa-user" />&nbsp;
               Пользователи</router-link
             >
           </li>
@@ -38,7 +38,7 @@
               to="/admin/categories"
               class="link-secondary"
               style="text-decoration: none"
-              ><font-awesome-icon icon="fa-solid fa-list" />
+              ><font-awesome-icon icon="fa-solid fa-list" />&nbsp;
               Категории</router-link
             >
           </li>
@@ -47,7 +47,7 @@
               to="/admin/docs"
               class="link-secondary"
               style="text-decoration: none"
-              ><font-awesome-icon icon="fa-solid fa-file" />
+              ><font-awesome-icon icon="fa-solid fa-file" />&nbsp;
               Документы</router-link
             >
           </li>

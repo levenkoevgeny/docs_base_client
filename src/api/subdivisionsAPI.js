@@ -4,9 +4,10 @@ import { authHeaders } from "@/api/authAPI"
 let base_url = "subdivisions"
 
 export const subdivisionsAPI = {
-  async getItemsList(token, subdivision_name = "") {
+  async getItemsList(token, searchForm = { subdivision_name: "", region: "" }) {
+    let { subdivision_name, region } = searchForm
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?subdivision_name__icontains=${subdivision_name}`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?subdivision_name__icontains=${subdivision_name}&region=${region}`,
       authHeaders(token)
     )
   },

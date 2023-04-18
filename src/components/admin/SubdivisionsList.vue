@@ -159,16 +159,38 @@
       <h3>Подразделения</h3>
     </div>
 
-    <label>Поиск по названию</label>
-    <div class="d-flex flex-row justify-content-between align-items-center">
-      <div>
-        <input
-          type="text"
-          class="form-control"
-          style="width: 400px"
-          v-model="searchForm.subdivision_name"
-        />
+    <div class="shadow p-3 mb-5 bg-body rounded">
+      <h5>Поиск</h5>
+      <div class="row">
+        <div class="col-6">
+          <div class="mb-3">
+            <label class="form-label">Название подразделения</label>
+            <input
+              type="text"
+              class="form-control"
+              v-model="searchForm.subdivision_name"
+            />
+          </div>
+        </div>
+        <div class="col-6">
+          <div class="mb-3">
+            <label class="form-label">Область</label>
+            <select class="form-select" v-model="searchForm.region">
+              <option selected value="">--------</option>
+              <option
+                :value="region.id"
+                :key="region.id"
+                v-for="region in sortedRegionsList"
+              >
+                {{ region.region }}
+              </option>
+            </select>
+          </div>
+        </div>
       </div>
+    </div>
+
+    <div class="d-flex flex-row justify-content-end align-items-center mt-3">
       <div>
         <button
           @click="deleteCheckedSubdivisionsHandler"
@@ -216,8 +238,8 @@
               </th>
               <th scope="col">Название подразделения</th>
               <th scope="col">Область</th>
-              <th scope="col">Количество пользователей</th>
-              <th scope="col">Дата и время создания</th>
+              <th scope="col" class="text-center">Количество пользователей</th>
+              <th scope="col" class="text-center">Дата и время создания</th>
             </tr>
           </thead>
           <tbody>
@@ -239,8 +261,8 @@
                 {{ subdivision.subdivision_name }}
               </td>
               <td>{{ subdivision.get_region_name }}</td>
-              <td>{{ subdivision.get_users_count }}</td>
-              <td>
+              <td class="text-center">{{ subdivision.get_users_count }}</td>
+              <td class="text-center">
                 {{ getFormattedDateComponent(subdivision.date_time_created) }}
                 {{ getFormattedTimeComponent(subdivision.date_time_created) }}
               </td>
@@ -284,10 +306,11 @@ import { subdivisionsAPI } from "@/api/subdivisionsAPI"
 import { regionsAPI } from "@/api/regionsAPI"
 import { getFormattedDate, getFormattedTime } from "@/utils"
 import debounce from "lodash.debounce"
+import ClientMain from "@/components/client/ClientMain"
 
 export default {
   name: "SubdivisionsList",
-  components: { Spinner },
+  components: { ClientMain, Spinner },
   data() {
     return {
       subdivisionsList: { results: [] },
@@ -302,6 +325,7 @@ export default {
       },
       searchForm: {
         subdivision_name: "",
+        region: "",
       },
       isLoading: true,
       isError: false,
@@ -314,7 +338,10 @@ export default {
     async loadData() {
       this.isLoading = true
       try {
-        const response = await subdivisionsAPI.getItemsList(this.userToken)
+        const response = await subdivisionsAPI.getItemsList(
+          this.userToken,
+          this.searchForm
+        )
         this.subdivisionsList = await response.data
         const responseRegions = await regionsAPI.getItemsList(this.userToken)
         this.regionList = await responseRegions.data
@@ -329,7 +356,7 @@ export default {
       this.isLoading = true
       try {
         await subdivisionsAPI.addItem(this.userToken, this.newSubdivisionForm)
-        await this.makeFilter()
+        await this.loadData()
       } catch (error) {
         this.isError = true
       } finally {
@@ -344,19 +371,11 @@ export default {
     async updateSubdivision(event) {
       event.preventDefault()
       try {
-        const response = await subdivisionsAPI.updateItem(
+        await subdivisionsAPI.updateItem(
           this.userToken,
           this.currentSubdivisionForUpdate
         )
-        const updatedSubdivision = await response.data
-
-        this.subdivisionsList.results = this.subdivisionsList.results.map(
-          (subdivision) => {
-            if (subdivision.id === updatedSubdivision.id) {
-              return updatedSubdivision
-            } else return subdivision
-          }
-        )
+        await this.loadData()
         this.$refs.closeSubdivisionUpdateModal.click()
       } catch (error) {
         this.isError = true
@@ -393,19 +412,8 @@ export default {
         this.isLoading = false
       }
     },
-    makeFilter: debounce(async function () {
-      this.isLoading = true
-      try {
-        const response = await subdivisionsAPI.getItemsList(
-          this.userToken,
-          this.searchForm.subdivision_name
-        )
-        this.subdivisionsList = await response.data
-      } catch (error) {
-        this.isError = true
-      } finally {
-        this.isLoading = false
-      }
+    debouncedSearch: debounce(async function () {
+      await this.loadData()
     }, 500),
     deleteCheckedSubdivisionsHandler() {
       this.isLoading = true
@@ -422,7 +430,7 @@ export default {
       )
       Promise.all(requests)
         .then(async () => {
-          await this.makeFilter()
+          await this.loadData()
         })
         .catch(() => (this.isError = true))
         .finally(() => {
@@ -477,7 +485,7 @@ export default {
   watch: {
     searchForm: {
       handler(newValue, oldValue) {
-        this.makeFilter()
+        this.debouncedSearch()
       },
       deep: true,
     },
