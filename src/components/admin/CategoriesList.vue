@@ -116,7 +116,11 @@
     <div class="alert alert-danger" role="alert" v-if="isError">
       Ошибка приложения
     </div>
-    <h3>Категории</h3>
+    <div class="d-flex align-items-center mb-3">
+      <h5><font-awesome-icon icon="fa-solid fa-list" />&nbsp;&nbsp;</h5>
+      <h3>Категории</h3>
+    </div>
+
     <small>Поиск по названию</small>
     <div class="d-flex flex-row justify-content-between align-items-center">
       <div>

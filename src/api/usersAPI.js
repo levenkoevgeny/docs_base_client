@@ -24,7 +24,7 @@ export const usersAPI = {
       is_active,
     } = searchForm
     return axios.get(
-      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/`,
+      `${process.env.VUE_APP_BACKEND_PROTOCOL}://${process.env.VUE_APP_BACKEND_HOST}:${process.env.VUE_APP_BACKEND_PORT}/api/${base_url}/?username__icontains=${username}&last_name__icontains=${last_name}&subdivision=${subdivision}&is_superuser=${is_superuser}&is_staff=${is_staff}&is_active=${is_active}`,
       authHeaders(token)
     )
   },

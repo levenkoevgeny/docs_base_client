@@ -154,8 +154,12 @@
     <div class="alert alert-danger" role="alert" v-if="isError">
       Ошибка приложения
     </div>
-    <h3>Подразделения</h3>
-    <small>Поиск по названию</small>
+    <div class="d-flex align-items-center mb-3">
+      <h5><font-awesome-icon icon="fa-solid fa-users" />&nbsp;&nbsp;</h5>
+      <h3>Подразделения</h3>
+    </div>
+
+    <label>Поиск по названию</label>
     <div class="d-flex flex-row justify-content-between align-items-center">
       <div>
         <input
@@ -196,8 +200,10 @@
     </div>
 
     <div v-else>
-      <div v-if="sortedSubdivisionsList.length > 0" class="mt-5">
-        <small>Всего записей в базе - ({{ subdivisionsList.count }})</small>
+      <div v-if="sortedSubdivisionsList.length > 0" class="mt-4">
+        <small
+          ><b>Всего записей - ({{ subdivisionsList.count }})</b></small
+        >
         <table class="table table-borderless table-hover">
           <thead class="table-head">
             <tr>

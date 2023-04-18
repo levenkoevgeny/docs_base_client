@@ -277,7 +277,10 @@
       Ошибка приложения
     </div>
     <div>
-      <h3>Документы</h3>
+      <div class="d-flex align-items-center mb-3">
+        <h5><font-awesome-icon icon="fa-solid fa-file" />&nbsp;&nbsp;</h5>
+        <h3>Документы</h3>
+      </div>
       <small>Поиск по названию документа</small>
       <div class="d-flex flex-row justify-content-between align-items-center">
         <div>
@@ -425,7 +428,6 @@ export default {
         region: "",
       },
       currentDocForUpdate: {},
-
       isLoading: true,
       isError: false,
     }

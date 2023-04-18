@@ -24,7 +24,7 @@ const routes = [
     path: "",
     name: "client-main",
     component: ClientMain,
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: "/admin",

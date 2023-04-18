@@ -9,4 +9,6 @@
 .cursor-pointer {
   cursor: pointer;
 }
+
+/*bootstrap*/
 </style>

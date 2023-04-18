@@ -347,7 +347,11 @@
       <div class="alert alert-danger" role="alert" v-if="isError">
         Ошибка приложения
       </div>
-      <h3>Пользователи</h3>
+
+      <div class="d-flex align-items-center mb-3">
+        <h5><font-awesome-icon icon="fa-solid fa-user" />&nbsp;&nbsp;</h5>
+        <h3>Пользователи</h3>
+      </div>
 
       <div class="row">
         <div class="col-4">
@@ -509,9 +513,19 @@
                   </td>
                   <td>{{ user.last_name }}</td>
                   <td>{{ user.first_name }}</td>
-                  <td>{{ user.is_superuser }}</td>
-                  <td>{{ user.is_staff }}</td>
-                  <td>{{ user.is_active }}</td>
+                  <td v-if="user.is_superuser">
+                    <font-awesome-icon icon="fa-solid fa-check" />
+                  </td>
+                  <td v-else></td>
+
+                  <td v-if="user.is_staff">
+                    <font-awesome-icon icon="fa-solid fa-check" />
+                  </td>
+                  <td v-else></td>
+                  <td v-if="user.is_active">
+                    <font-awesome-icon icon="fa-solid fa-unlock" />
+                  </td>
+                  <td v-else><font-awesome-icon icon="fa-solid fa-lock" /></td>
                   <td>
                     {{ getFormattedDateComponent(user.date_joined) }}
                     {{ getFormattedTimeComponent(user.date_joined) }}
@@ -519,10 +533,11 @@
                   <td>
                     <button
                       type="button"
-                      class="btn btn-link"
+                      class="btn btn-secondary"
                       @click.stop="showModalForUpdatePassword(user.id)"
                     >
-                      Обновить пароль
+                      <font-awesome-icon icon="fa-solid fa-key" /> Обновить
+                      пароль
                     </button>
                   </td>
                 </tr>

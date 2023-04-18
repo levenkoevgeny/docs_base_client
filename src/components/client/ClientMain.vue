@@ -1,4 +1,25 @@
 <template>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">
+        <font-awesome-icon icon="fa-solid fa-book" /> Система учета документов
+      </a>
+      <div class="btn-group dropstart">
+        <div
+          class="btn btn-secondary bg-dark border-0"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <font-awesome-icon icon="fa-solid fa-user" />
+        </div>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+          <li>
+            <a class="dropdown-item" @click="logOut"> Выход из системы </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
   <div class="container">
     <div class="alert alert-success mt-3" role="alert">Поиск документов</div>
     <form>
@@ -59,6 +80,12 @@ export default {
     } finally {
       this.isLoading = false
     }
+  },
+  methods: {
+    logOut() {
+      this.$store.dispatch("auth/actionRemoveLogIn")
+      this.$router.push({ name: "login", replace: true })
+    },
   },
   computed: {
     ...mapGetters({
