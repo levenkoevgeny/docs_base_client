@@ -4,10 +4,7 @@
   <div class="row">
     <div class="col-xl-5 scaledHover transition">
       <div class="border rounded-3">
-        <div
-          class="border-bottom d-flex"
-          style="background-color: rgba(248, 248, 252, 0.85)"
-        >
+        <div class="border-bottom d-flex item-header">
           <div class="d-flex align-items-center m-3">
             <h5>Пользователи</h5>
           </div>
@@ -43,10 +40,7 @@
     </div>
     <div class="col-xl-7 scaledHover transition">
       <div class="border rounded-3">
-        <div
-          class="border-bottom d-flex"
-          style="background-color: rgba(248, 248, 252, 0.85)"
-        >
+        <div class="border-bottom d-flex item-header">
           <div class="d-flex align-items-center m-3">
             <h5>Подразделения</h5>
           </div>
@@ -89,10 +83,7 @@
   <div class="row">
     <div class="col-xl-7 scaledHover transition">
       <div class="border rounded-3">
-        <div
-          class="border-bottom d-flex"
-          style="background-color: rgba(248, 248, 252, 0.85)"
-        >
+        <div class="border-bottom d-flex item-header">
           <div class="d-flex align-items-center m-3">
             <h5>Категории</h5>
           </div>
@@ -129,10 +120,7 @@
     </div>
     <div class="col-xl-5 scaledHover transition">
       <div class="border rounded-3">
-        <div
-          class="border-bottom d-flex"
-          style="background-color: rgba(248, 248, 252, 0.85)"
-        >
+        <div class="border-bottom d-flex item-header">
           <div class="d-flex align-items-center m-3">
             <h5>Документы</h5>
           </div>
@@ -253,5 +241,13 @@ export default {
 }
 .transition {
   transition: 1s;
+}
+.item-header {
+  background-color: gray;
+  opacity: 0.7;
+  filter: blur(0.1px);
+  color: black;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 </style>

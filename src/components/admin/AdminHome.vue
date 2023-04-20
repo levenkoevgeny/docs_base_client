@@ -52,53 +52,53 @@
             >
           </li>
         </ul>
-        <div class="mt-3"><h5>Разделы</h5></div>
-        <ul class="list-group">
-          <li class="list-group-item border-0">
-            <a href="" class="link-secondary" style="text-decoration: none"
-              >Раздел 1</a
-            >
-            <ul class="list-group">
-              <li class="list-group-item border-0">
-                <a href="" class="link-secondary" style="text-decoration: none"
-                  >Подраздел 1</a
-                >
-              </li>
-              <li class="list-group-item border-0">
-                <a href="" class="link-secondary" style="text-decoration: none"
-                  >Подраздел 2</a
-                >
-              </li>
-              <li class="list-group-item border-0">
-                <a href="" class="link-secondary" style="text-decoration: none"
-                  >Подраздел 3</a
-                >
-              </li>
-            </ul>
-          </li>
-          <li class="list-group-item border-0">
-            <a href="" class="link-secondary" style="text-decoration: none"
-              >Раздел 2</a
-            >
-            <ul class="list-group">
-              <li class="list-group-item border-0">
-                <a href="" class="link-secondary" style="text-decoration: none"
-                  >Подраздел 1</a
-                >
-              </li>
-              <li class="list-group-item border-0">
-                <a href="" class="link-secondary" style="text-decoration: none"
-                  >Подраздел 2</a
-                >
-              </li>
-              <li class="list-group-item border-0">
-                <a href="" class="link-secondary" style="text-decoration: none"
-                  >Подраздел 3</a
-                >
-              </li>
-            </ul>
-          </li>
-        </ul>
+        <!--        <div class="mt-3"><h5>Разделы</h5></div>-->
+        <!--        <ul class="list-group">-->
+        <!--          <li class="list-group-item border-0">-->
+        <!--            <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--              >Раздел 1</a-->
+        <!--            >-->
+        <!--            <ul class="list-group">-->
+        <!--              <li class="list-group-item border-0">-->
+        <!--                <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--                  >Подраздел 1</a-->
+        <!--                >-->
+        <!--              </li>-->
+        <!--              <li class="list-group-item border-0">-->
+        <!--                <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--                  >Подраздел 2</a-->
+        <!--                >-->
+        <!--              </li>-->
+        <!--              <li class="list-group-item border-0">-->
+        <!--                <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--                  >Подраздел 3</a-->
+        <!--                >-->
+        <!--              </li>-->
+        <!--            </ul>-->
+        <!--          </li>-->
+        <!--          <li class="list-group-item border-0">-->
+        <!--            <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--              >Раздел 2</a-->
+        <!--            >-->
+        <!--            <ul class="list-group">-->
+        <!--              <li class="list-group-item border-0">-->
+        <!--                <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--                  >Подраздел 1</a-->
+        <!--                >-->
+        <!--              </li>-->
+        <!--              <li class="list-group-item border-0">-->
+        <!--                <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--                  >Подраздел 2</a-->
+        <!--                >-->
+        <!--              </li>-->
+        <!--              <li class="list-group-item border-0">-->
+        <!--                <a href="" class="link-secondary" style="text-decoration: none"-->
+        <!--                  >Подраздел 3</a-->
+        <!--                >-->
+        <!--              </li>-->
+        <!--            </ul>-->
+        <!--          </li>-->
+        <!--        </ul>-->
       </div>
       <div class="px-3 pt-4" style="width: 100%">
         <router-view></router-view>
