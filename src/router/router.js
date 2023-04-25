@@ -30,7 +30,7 @@ const routes = [
     path: "/admin",
     name: "admin",
     component: AdminHome,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresStaff: true },
     children: [
       {
         path: "",
@@ -74,6 +74,17 @@ router.beforeEach(async (to, from) => {
     return {
       path: "/login",
       query: { redirect: to.fullPath },
+    }
+  }
+
+  const user = store.getters["auth/getUser"]
+  if (user) {
+    const isStaff = user.is_staff
+    if (to.meta.requiresStaff && !isStaff) {
+      return {
+        path: "/login",
+        query: { redirect: to.fullPath },
+      }
     }
   }
 })

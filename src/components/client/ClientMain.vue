@@ -9,10 +9,22 @@
           class="btn btn-secondary bg-dark border-0"
           data-bs-toggle="dropdown"
           aria-expanded="false"
+          v-if="userData.last_name"
+        >
+          <font-awesome-icon icon="fa-solid fa-user" />&nbsp;
+          {{ userData.last_name }}
+        </div>
+
+        <div
+          class="btn btn-secondary bg-dark border-0"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          v-else
         >
           <font-awesome-icon icon="fa-solid fa-user" />&nbsp;
           {{ userData.username }}
         </div>
+
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
           <li>
             <a class="dropdown-item" @click="logOut"> Выход из системы </a>
@@ -31,16 +43,25 @@
             v-for="category in sortedCategoryList"
             :key="category.id"
           >
-            {{ category.category_item_name }}
+            <button
+              type="button"
+              class="btn btn-link my-0 py-0"
+              @click.stop="
+                clickGetIntoCategory({
+                  ...category,
+                  parent_category_isnull: false,
+                })
+              "
+            >
+              {{ category.category_item_name }}
+            </button>
           </li>
         </ul>
       </div>
       <div class="col-lg-10">
         <div class="alert alert-success" role="alert">Поиск документов</div>
         <div class="mb-3">
-          <label for="exampleInputEmail1" class="form-label"
-            >Название документа</label
-          >
+          <label class="form-label">Название документа</label>
           <input
             type="text"
             class="form-control"
@@ -50,6 +71,49 @@
 
         <div v-if="isLoading">Загрузка ...</div>
         <div v-else>
+          <nav aria-label="breadcrumb" class="mt-3">
+            <ol class="breadcrumb">
+              <li
+                class="breadcrumb-item"
+                :class="{
+                  active: isLastArrayElement(categoryBreadCrumbs, breadCrumb),
+                }"
+                v-for="breadCrumb in categoryBreadCrumbs"
+                :key="breadCrumb.category"
+              >
+                <button
+                  type="button"
+                  class="btn btn-link"
+                  disabled
+                  style="cursor: help !important; text-decoration: none"
+                  @click="
+                    clickBreadCrumb(
+                      breadCrumb.parentSearchFormData.parent_category,
+                      breadCrumb.parentSearchFormData.parent_category_isnull,
+                      breadCrumb.category_id
+                    )
+                  "
+                  v-if="isLastArrayElement(categoryBreadCrumbs, breadCrumb)"
+                >
+                  {{ breadCrumb.category_item_name }}
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-link"
+                  @click="
+                    clickBreadCrumb(
+                      breadCrumb.parentSearchFormData.parent_category,
+                      breadCrumb.parentSearchFormData.parent_category_isnull,
+                      breadCrumb.category_id
+                    )
+                  "
+                  v-else
+                >
+                  {{ breadCrumb.category_item_name }}
+                </button>
+              </li>
+            </ol>
+          </nav>
           <h3 class="my-3">Результаты поиска</h3>
           <div v-if="sortedDocsList.length > 0">
             <table class="table my-3">
@@ -104,8 +168,8 @@
 </template>
 
 <script>
-import { docsAPI } from "@/api/docsAPI"
-import { categoriesAPI } from "@/api/categoriesAPI"
+import { docsAPIClient } from "@/api/client/docsAPIClient"
+import { categoriesAPIClient } from "@/api/client/categoriesAPIClient"
 import Spinner from "@/components/common/Spinner"
 import { mapGetters } from "vuex"
 import debounce from "lodash.debounce"
@@ -133,6 +197,7 @@ export default {
           },
         },
       ],
+      currentCategory: null,
       isLoading: true,
       isError: false,
     }
@@ -142,14 +207,22 @@ export default {
   },
   methods: {
     async loadData() {
+      let docsSearchForm = this.docsSearchForm
+      if (!this.userData.is_superuser) {
+        docsSearchForm = {
+          ...docsSearchForm,
+          region: this.userData.get_region,
+        }
+      }
+
       this.isLoading = true
       try {
-        const response = await docsAPI.getItemsList(
+        const response = await docsAPIClient.getItemsList(
           this.userToken,
-          this.docsSearchForm
+          docsSearchForm
         )
         this.docsList = await response.data
-        const responseCategory = await categoriesAPI.getItemsList(
+        const responseCategory = await categoriesAPIClient.getItemsList(
           this.userToken,
           this.categorySearchForm
         )
@@ -163,7 +236,7 @@ export default {
     async updatePaginator(url) {
       this.isLoading = true
       try {
-        const response = await docsAPI.updateList(url, this.userToken)
+        const response = await docsAPIClient.updateList(url, this.userToken)
         this.docsList = await response.data
       } catch (error) {
         this.isError = true
@@ -174,6 +247,74 @@ export default {
     debouncedSearch: debounce(async function () {
       await this.loadData()
     }, 500),
+    addToBreadCrumbs(
+      category_id,
+      category_item_name,
+      parent_category,
+      parent_category_isnull
+    ) {
+      this.categoryBreadCrumbs.push({
+        category_id,
+        category_item_name,
+        parentSearchFormData: { parent_category, parent_category_isnull },
+      })
+    },
+    getIntoCategory(parent_category, parent_category_isnull, currentCategory) {
+      this.categorySearchForm.parent_category = parent_category
+      this.categorySearchForm.parent_category_isnull = parent_category_isnull
+      this.currentCategory = currentCategory
+      if (currentCategory === null) {
+        this.docsSearchForm.category = ""
+      } else {
+        this.docsSearchForm.category = currentCategory
+      }
+    },
+    clickGetIntoCategory(data) {
+      this.isLoading = true
+      let {
+        id: parentCategory,
+        category_item_name,
+        parent_category_isnull,
+      } = data
+      this.getIntoCategory(
+        parentCategory,
+        parent_category_isnull,
+        parentCategory
+      )
+      this.addToBreadCrumbs(
+        parentCategory,
+        category_item_name,
+        parentCategory,
+        parent_category_isnull
+      )
+      this.currentCategory = parentCategory
+    },
+    clickBreadCrumb(parentCategory, parent_category_isnull, currentCategory) {
+      this.getIntoCategory(
+        parentCategory,
+        parent_category_isnull,
+        currentCategory
+      )
+      let lastIndex
+      this.categoryBreadCrumbs.map((breadCrumb, index) => {
+        if (breadCrumb.category_id === currentCategory) {
+          lastIndex = index
+        }
+      })
+      this.categoryBreadCrumbs = this.categoryBreadCrumbs.filter(
+        (breadCrumb, index) => index < lastIndex + 1
+      )
+    },
+    isLastArrayElement(array, el) {
+      let lastIndex = array.length - 1
+      let elIndex
+      array.map((element, index) => {
+        if (element.category_id === el.category_id) {
+          elIndex = index
+        }
+      })
+      return elIndex === lastIndex
+    },
     logOut() {
       this.$store.dispatch("auth/actionRemoveLogIn")
       this.$router.push({ name: "login", replace: true })
@@ -193,6 +334,12 @@ export default {
   },
   watch: {
     docsSearchForm: {
+      handler(newValue, oldValue) {
+        this.debouncedSearch()
+      },
+      deep: true,
+    },
+    categorySearchForm: {
       handler(newValue, oldValue) {
         this.debouncedSearch()
       },

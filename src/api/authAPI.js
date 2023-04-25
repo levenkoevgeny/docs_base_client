@@ -15,7 +15,7 @@ axios.interceptors.response.use(
     return response
   },
   async function (error) {
-    if (error.response.status === 401) {
+    if (error.response.status === 401 || error.response.status === 403) {
       store.dispatch("auth/actionRemoveLogIn")
       await router.replace({ name: "login" })
     }

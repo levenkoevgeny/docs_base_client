@@ -88,12 +88,13 @@
                         :value="subdivision.id"
                       >
                         {{ subdivision.subdivision_name }}
+                        {{ subdivision.get_region_name }}
                       </option>
                     </select>
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="userData.is_superuser">
                 <div class="col-12">
                   <div class="form-check">
                     <input
@@ -105,7 +106,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="userData.is_superuser">
                 <div class="col-12">
                   <div class="form-check">
                     <input
@@ -224,12 +225,13 @@
                         :value="subdivision.id"
                       >
                         {{ subdivision.subdivision_name }}
+                        {{ subdivision.get_region_name }}
                       </option>
                     </select>
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="userData.is_superuser">
                 <div class="col-12">
                   <div class="form-check">
                     <input
@@ -241,7 +243,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="userData.is_superuser">
                 <div class="col-12">
                   <div class="form-check">
                     <input
@@ -391,6 +393,7 @@
                   :value="subdivision.id"
                 >
                   {{ subdivision.subdivision_name }}
+                  {{ subdivision.get_region_name }}
                 </option>
               </select>
             </div>
@@ -399,7 +402,7 @@
         <div class="row">
           <div class="col-4">
             <div class="mb-3">
-              <label class="form-label">Суперпользователь</label>
+              <label class="form-label">Администратор</label>
               <select
                 class="form-select"
                 aria-label="Default select example"
@@ -635,14 +638,30 @@ export default {
   },
   methods: {
     async loadData() {
+      let searchUsersData = this.searchForm
+      let searchSubdivisionsData = { subdivision_name: "", region: "" }
+
+      if (!this.userData.is_superuser) {
+        searchUsersData = {
+          ...searchUsersData,
+          subdivision: this.userData.subdivision,
+        }
+        searchSubdivisionsData = {
+          ...searchSubdivisionsData,
+          region: this.userData.get_region,
+        }
+      }
+
       try {
         const response = await usersAPI.getItemsList(
           this.userToken,
-          this.searchForm
+          searchUsersData
         )
         this.usersList = await response.data
+
         const responseSubdivision = await subdivisionsAPI.getItemsList(
-          this.userToken
+          this.userToken,
+          searchSubdivisionsData
         )
         this.subdivisionsList = await responseSubdivision.data
       } catch (e) {

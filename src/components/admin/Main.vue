@@ -22,7 +22,8 @@
                   {{ user.username }}
                 </td>
                 <td>
-                  {{ user.last_name }}
+                  {{ getFormattedDateComponent(user.date_joined) }}
+                  {{ getFormattedTimeComponent(user.date_joined) }}
                 </td>
               </tr>
             </tbody>
@@ -81,7 +82,7 @@
   </div>
   <div style="height: 20px"></div>
   <div class="row">
-    <div class="col-xl-7 scaledHover transition">
+    <div class="col-xl-7 scaledHover transition" v-if="userData.is_superuser">
       <div class="border rounded-3">
         <div class="border-bottom d-flex item-header">
           <div class="d-flex align-items-center m-3">
@@ -183,19 +184,62 @@ export default {
   },
   async created() {
     try {
+      let subdivisionsSearchForm = {
+        subdivision_name: "",
+        region: "",
+      }
+      if (!this.userData.is_superuser) {
+        subdivisionsSearchForm = {
+          ...subdivisionsSearchForm,
+          region: this.userData.get_region,
+        }
+      }
+
       const responseSubdivisions = await subdivisionsAPI.getItemsList(
-        this.userToken
+        this.userToken,
+        subdivisionsSearchForm
       )
       this.latestSubdivisionsList = await responseSubdivisions.data
 
-      const responseUsers = await usersAPI.getItemsList(this.userToken)
+      let usersSearchForm = {
+        username: "",
+        last_name: "",
+        subdivision: "",
+        is_superuser: "",
+        is_staff: "",
+        is_active: "",
+      }
+      if (!this.userData.is_superuser) {
+        usersSearchForm = {
+          ...usersSearchForm,
+          subdivision: this.userData.subdivision,
+        }
+      }
+      const responseUsers = await usersAPI.getItemsList(
+        this.userToken,
+        usersSearchForm
+      )
       this.latestUsersList = await responseUsers.data
 
       const responseCategories = await categoriesAPI.getItemsList(
         this.userToken
       )
       this.latestCategoriesList = await responseCategories.data
-      const responseDocs = await docsAPI.getItemsList(this.userToken)
+
+      let docsSearchForm = {
+        file_name: "",
+        category: "",
+        region: "",
+        user: "",
+      }
+      if (!this.userData.is_superuser) {
+        docsSearchForm = { ...docsSearchForm, region: this.userData.get_region }
+      }
+
+      const responseDocs = await docsAPI.getItemsList(
+        this.userToken,
+        docsSearchForm
+      )
       this.latestDocsList = await responseDocs.data
     } catch (e) {
       this.isError = true

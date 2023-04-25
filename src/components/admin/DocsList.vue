@@ -67,7 +67,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="userData.is_superuser">
                 <div class="col-12">
                   <div class="mb-3">
                     <label class="form-label">Регион</label>
@@ -205,7 +205,7 @@
                   </div>
                 </div>
               </div>
-              <div class="row">
+              <div class="row" v-if="userData.is_superuser">
                 <div class="col-12">
                   <div class="mb-3">
                     <label class="form-label">Регион</label>
@@ -314,7 +314,11 @@
         <div class="col-4">
           <div class="mb-3">
             <label class="form-label">Область</label>
-            <select class="form-select" v-model="searchForm.region">
+            <select
+              class="form-select"
+              v-model="searchForm.region"
+              :disabled="!this.userData.is_superuser"
+            >
               <option selected value="">--------</option>
               <option
                 :value="region.id"
@@ -410,7 +414,7 @@
                 <td>{{ doc.description }}</td>
                 <td>{{ doc.category }}</td>
                 <td>{{ doc.doc_date }}</td>
-                <td><a :href="doc.doc_file">Скачать</a></td>
+                <td><a :href="doc.doc_file" @click.stop>Скачать</a></td>
               </tr>
             </tbody>
           </table>
@@ -482,10 +486,17 @@ export default {
   },
   methods: {
     async loadData() {
+      let searchDocsData = this.searchForm
+      if (!this.userData.is_superuser) {
+        searchDocsData = {
+          ...searchDocsData,
+          region: this.userData.get_region,
+        }
+      }
       try {
         const response = await docsAPI.getItemsList(
           this.userToken,
-          this.searchForm
+          searchDocsData
         )
         this.docsList = await response.data
         const categoriesResponse = await categoriesAPI.getItemsList(
@@ -506,11 +517,17 @@ export default {
       let formData = new FormData()
       formData.append("doc_file", this.$refs.file.files[0])
       formData.append("category", this.newDocForm.category)
-      formData.append("region", this.newDocForm.region)
       formData.append("file_name", this.newDocForm.file_name)
       formData.append("description", this.newDocForm.description)
       formData.append("doc_date", this.newDocForm.doc_date)
       formData.append("user", this.userData.id)
+
+      if (!this.userData.is_superuser) {
+        formData.append("region", this.userData.get_region)
+      } else {
+        formData.append("region", this.newDocForm.region)
+      }
+
       try {
         await docsAPI.addItem(this.userToken, formData)
         await this.loadData()
@@ -582,11 +599,17 @@ export default {
       let formData = new FormData()
       formData.append("doc_file", this.$refs.fileForUpdate.files[0])
       formData.append("category", this.currentDocForUpdate.category)
-      formData.append("region", this.currentDocForUpdate.region)
       formData.append("file_name", this.currentDocForUpdate.file_name)
       formData.append("description", this.currentDocForUpdate.description)
       formData.append("doc_date", this.currentDocForUpdate.doc_date)
       formData.append("user", this.userData.id)
+
+      if (!this.userData.is_superuser) {
+        formData.append("region", this.userData.get_region)
+      } else {
+        formData.append("region", this.currentDocForUpdate.region)
+      }
+
       try {
         await docsAPI.updateItem(
           this.userToken,

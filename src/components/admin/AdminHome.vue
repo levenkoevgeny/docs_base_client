@@ -15,7 +15,7 @@
           </h5>
         </div>
         <ul class="list-group">
-          <li class="list-group-item border-0">
+          <li class="list-group-item border-0" v-if="userData.is_superuser">
             <router-link
               to="/admin/subdivisions"
               class="link-secondary"
@@ -24,6 +24,7 @@
               Подразделения</router-link
             >
           </li>
+
           <li class="list-group-item border-0">
             <router-link
               to="/admin/users"
@@ -33,7 +34,7 @@
               Пользователи</router-link
             >
           </li>
-          <li class="list-group-item border-0">
+          <li class="list-group-item border-0" v-if="userData.is_superuser">
             <router-link
               to="/admin/categories"
               class="link-secondary"
@@ -110,9 +111,16 @@
 <script>
 import AdminNav from "@/components/admin/AdminNav"
 import Spinner from "@/components/common/Spinner"
+import { mapGetters } from "vuex"
 export default {
   name: "AdminHome",
   components: { AdminNav, Spinner },
+  computed: {
+    ...mapGetters({
+      userData: "auth/getUser",
+      userToken: "auth/getToken",
+    }),
+  },
 }
 </script>
 
