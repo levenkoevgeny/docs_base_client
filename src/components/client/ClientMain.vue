@@ -35,7 +35,7 @@
   </nav>
   <div class="container-fluid">
     <div class="row mt-3">
-      <div class="col-lg-2">
+      <div class="col-lg-3">
         <h5>Навигация</h5>
         <ul class="list-group">
           <li
@@ -45,7 +45,7 @@
           >
             <button
               type="button"
-              class="btn btn-link my-0 py-0"
+              class="btn btn-link my-0 py-0 text-start"
               @click.stop="
                 clickGetIntoCategory({
                   ...category,
@@ -58,7 +58,7 @@
           </li>
         </ul>
       </div>
-      <div class="col-lg-10">
+      <div class="col-lg-9">
         <div class="alert alert-success" role="alert">Поиск документов</div>
         <div class="mb-3">
           <label class="form-label">Название документа</label>

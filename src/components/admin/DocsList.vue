@@ -412,7 +412,7 @@
                 <td>{{ doc.get_region }}</td>
 
                 <td>{{ doc.description }}</td>
-                <td>{{ doc.category }}</td>
+                <td>{{ doc.get_category }}</td>
                 <td>{{ doc.doc_date }}</td>
                 <td><a :href="doc.doc_file" @click.stop>Скачать</a></td>
               </tr>
